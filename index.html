@@ -182,11 +182,31 @@ footer{padding:14px 10px 0;font-size:11px;color:var(--gray);text-align:center}
 .startb:active{background:var(--face)}
 .flow.big2 .fbox{text-align:center;line-height:1.35}
 
+/* ---------- v0.3 はじめに（ことばの意味・符の手順・待ち） ---------- */
+.toc{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.tocb{appearance:none;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:5px 10px;font-size:11.5px;color:var(--navy);cursor:pointer;font-family:inherit;font-weight:600}
+.tocb:active{background:var(--face)}
+.wname{font-size:13.5px;font-weight:700;color:var(--navy)}
+.fusteps{background:#fff;border:1px solid var(--line);border-radius:10px;padding:2px 10px;margin-bottom:10px}
+.fustep{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line)}
+.fustep:last-child{border-bottom:0}
+.fsl{display:flex}
+.fsm b{display:block;font-size:13px;color:var(--navy)}
+.fsm span{display:block;font-size:11.5px;color:var(--gray);line-height:1.5;margin-top:2px}
+.fsr{font-size:14px;font-weight:800;color:var(--navy);white-space:nowrap}
+.fustep.sumrow{border-top:1.5px solid var(--navy);border-bottom:0;margin-top:2px}
+.waitrows{background:#fff;border:1px solid var(--line);border-radius:10px;padding:2px 10px;margin-bottom:10px}
+.waitrow{padding:10px 0;border-bottom:1px dashed var(--line)}
+.waitrow:last-child{border-bottom:0}
+.wtop{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.wtop .plus{font-size:12px;color:var(--gray)}
+.wfu{margin-left:auto;font-size:13px;font-weight:800;color:var(--navy);white-space:nowrap}
+
 </style>
 </head>
 <body>
 <header>
-  <h1>麻雀 点数計算ドリル<small>v0.2.1</small></h1>
+  <h1>麻雀 点数計算ドリル<small>v0.3</small></h1>
   <div class="tabs">
     <button class="tab" data-tab="intro">はじめに</button>
     <button class="tab" data-tab="score">点数の練習</button>
@@ -1639,69 +1659,155 @@ var YAKU_LIST = [
       var wrap = $('#introBody');
       wrap.innerHTML = '';
 
+      function h3(id, t) { var e = el('h3', '', t); e.id = id; wrap.appendChild(e); return e; }
+      function note(t) { wrap.appendChild(el('div', 'note', t)); }
+
       wrap.appendChild(el('div', 'lead',
         '<b>麻雀の点数を、自分で言えるようになるためのアプリです。</b><br>'
-        + '手牌を見て「何符・何翻・何点」を当てる練習と、卓でそのまま引ける早見表が入っています。'));
+        + '言葉の意味から順に並べてあります。分からない言葉が出たら、ここに戻ってきてください。'));
 
-      /* ---- 点数が決まる順番 ---- */
-      wrap.appendChild(el('h3', '', '点数は、この順で決まります'));
+      /* ---- もくじ ---- */
+      var toc = el('div', 'toc');
+      [['s1', '点数が決まる順番'], ['s2', 'ことばの意味'], ['s3', 'かたまりに分ける'],
+      ['s4', '符（ふ）とは'], ['s5', '待ちの5つの形'], ['s6', '翻（はん）とは'],
+      ['s7', '画面の読み方'], ['s8', 'どこから始めますか']].forEach(function (x) {
+        var b = el('button', 'tocb', x[1]);
+        b.onclick = function () { document.getElementById(x[0]).scrollIntoView({ block: 'start' }); };
+        toc.appendChild(b);
+      });
+      wrap.appendChild(toc);
+
+      /* ---- 1. 順番 ---- */
+      h3('s1', '点数は、この順で決まります');
       wrap.appendChild(el('div', 'flow big2',
-        '<span class="fbox">①かたまりに分ける</span><span class="farr">→</span>'
-        + '<span class="fbox">②符を数える</span><span class="farr">→</span>'
-        + '<span class="fbox">③翻を数える</span><span class="farr">→</span>'
-        + '<span class="fbox navy">④点数</span>'));
-      wrap.appendChild(el('div', 'note',
-        'このアプリのクイズは、この①〜④のどこかを1つずつ聞いています。'
-        + '「何符ですか」と出たら、それは<b>②を聞かれている</b>ということです。'));
+        '<span class="fbox">1. かたまりに分ける</span><span class="farr">→</span>'
+        + '<span class="fbox">2. 符を数える</span><span class="farr">→</span>'
+        + '<span class="fbox">3. 翻を数える</span><span class="farr">→</span>'
+        + '<span class="fbox navy">4. 点数</span>'));
+      note('クイズは、この1〜4のどれかを1つずつ聞いています。'
+        + '「何符ですか」と出たら、それは<b>2番を聞かれている</b>ということです。');
 
-      /* ---- ①かたまりに分ける ---- */
-      wrap.appendChild(el('h3', '', '① かたまりに分ける'));
-      wrap.appendChild(el('div', 'note',
-        'あがりの形は、<b>3枚のかたまりが4つ＋同じ牌2枚（雀頭）</b>の14枚です。'
-        + '3枚のかたまりは2種類しかありません。'));
-      var g1 = el('div', 'grouprow');
-      [[[1, 2, 3], '順子（続き数字3枚）'], [[31, 31, 31], '刻子（同じ牌3枚）'], [[20, 20], '雀頭（同じ牌2枚）']].forEach(function (x) {
+      /* ---- 2. ことばの意味 ---- */
+      h3('s2', 'ことばの意味');
+      note('このアプリに出てくる言葉は、これだけです。<b>読み方と、実物の牌</b>を並べてあります。');
+      var words = [
+        [[1, 2, 3], '順子（シュンツ）', '同じ色の<b>続き数字3枚</b>。字牌に順子はありません'],
+        [[31, 31, 31], '刻子（コーツ）', '<b>同じ牌3枚</b>'],
+        [[20, 20], '雀頭（ジャントウ）', '<b>同じ牌2枚</b>。「アタマ」とも言います。1つの手に1組だけ'],
+        [[22, 22, 22], '暗刻（アンコ）', '<b>鳴かずに自分でそろえた</b>刻子。符が高くなります'],
+        [[33, 33, 33], '明刻（ミンコ）', '<b>ポンでそろえた</b>刻子。人から1枚もらっているので符は半分'],
+        [null, '門前（メンゼン）', '<b>一度も鳴いていない</b>状態。リーチできるのはこのときだけ'],
+        [null, 'ツモ ／ ロン', '<b>ツモ</b>＝自分で引いてあがる。<b>ロン</b>＝人の捨て牌であがる'],
+        [null, '待ち', '<b>あと1枚でアガリ</b>という形。5つの型があります（下の節）'],
+        [null, '副底（フーテイ）', '<b>どの手にも最初から付く20符</b>。符はここから数え始めます'],
+        [null, '役（やく）', 'あがりの形についている<b>型の名前</b>。リーチ・タンヤオなど。<b>役が1つも無いとあがれません</b>'],
+        [null, 'ドラ', '<b>おまけの1翻</b>。1枚で1翻増えます。ただし<b>ドラは役ではない</b>ので、ドラだけではあがれません']
+      ];
+      var wl = el('div', 'readrows');
+      words.forEach(function (w) {
+        var line = el('div', 'readrow');
+        line.appendChild(el('div', 'wname', w[1]));
+        if (w[0]) { var l = el('div', 'rl'); l.appendChild(tileStrip(w[0])); line.appendChild(l); }
+        line.appendChild(el('div', 'rr', w[2]));
+        wl.appendChild(line);
+      });
+      wrap.appendChild(wl);
+
+      /* ---- 3. かたまり ---- */
+      h3('s3', '1. かたまりに分ける');
+      note('あがりの形は、<b>3枚のかたまりが4つ ＋ 雀頭1組</b>の14枚です。');
+      wrap.appendChild(el('div', 'flow big2',
+        '<span class="fbox">3枚のかたまり</span><span class="farr">×4</span>'
+        + '<span class="fbox">＋</span><span class="fbox">雀頭</span>'
+        + '<span class="farr">＝</span><span class="fbox navy">14枚</span>'));
+      note('クイズでは「やさしい」のあいだ、この<b>かたまりごとに離して</b>並べます。慣れたらボタンで1列に戻せます。');
+
+      /* ---- 4. 符 ---- */
+      h3('s4', '2. 符（ふ）とは');
+      note('<b>同じ役でも、そろえるのが難しい形ほど点数が高くなります。その「形の難しさ」を数字にしたのが符です。</b><br>'
+        + '副底の20から始めて、<b>刻子・雀頭・待ちの形・ツモかロンか</b>で足していきます。'
+        + '<b>順子（続き数字3枚）は1符にもなりません</b>。だから符が増えるのは、ほとんど刻子と待ちのせいです。');
+      note('実際に1つの手で数えてみます。<b>下の手を、2筒でロンしてあがった</b>としましょう。');
+
+      var ex = el('div', 'grouprow');
+      [[[1, 2, 3], '順子'], [[15, 16, 17], '順子'], [[20, 21, 22], '順子'],
+      [[22, 22, 22], '刻子'], [[10, 10], '雀頭']].forEach(function (x) {
         var g = el('span', 'mgroup');
-        g.appendChild(tileStrip(x[0]));
-        g.appendChild(el('small', '', x[1]));
-        g1.appendChild(g);
+        var t = el('span', 'mtiles');
+        x[0].forEach(function (c, j) {
+          var e = tileEl(c, {});
+          if (x[1] === '雀頭' && j === 0) e.classList.add('winmark');
+          t.appendChild(e);
+        });
+        g.appendChild(t); g.appendChild(el('small', '', x[1]));
+        ex.appendChild(g);
       });
-      wrap.appendChild(g1);
-      wrap.appendChild(el('div', 'note',
-        'クイズでは「やさしい」のあいだ、この<b>かたまりごとに離して</b>並べます。慣れてきたらボタンで1列に戻せます。'));
+      wrap.appendChild(ex);
+      wrap.appendChild(el('div', 'groupnote', '赤い枠が<b>あがり牌</b>（この2筒でロンしました）'));
 
-      /* ---- ②符 ---- */
-      wrap.appendChild(el('h3', '', '② 符（ふ）とは'));
-      wrap.appendChild(el('div', 'note',
-        '<b>手の「形」を数字にしたものです。点数のもとになります。</b><br>'
-        + '20から数え始めて、刻子・雀頭・待ちの形・ツモかロンかで足していきます。'
-        + '最後に10符単位へ切り上げ。<b>ほとんどの手は30符か40符</b>に落ち着きます。'));
-      var fx = el('table', 'futable');
-      [['副底（どの手にも付く土台）', '20符'], ['暗刻 5索（自分で3枚そろえた）', '4符'],
-      ['単騎待ち（最後の1枚が雀頭）', '2符'], ['門前でロン（鳴いていない）', '10符']].forEach(function (r) {
-        var tr = el('tr'); tr.appendChild(el('td', '', r[0])); tr.appendChild(el('td', 'num', r[1])); fx.appendChild(tr);
+      var fx = el('div', 'fusteps');
+      [
+        [null, '副底', 'どの手にも最初から付く土台', 20],
+        [[22, 22, 22], '暗刻 5索', '鳴かずに自分で3枚そろえた刻子。2〜8の牌なので4符（1・9・字牌なら8符）', 4],
+        [[10], '単騎（タンキ）待ち', '最後の1枚が雀頭になる待ち。当てにくいので2符', 2],
+        [null, '門前でロン', '一度も鳴かずに、人の捨て牌であがった', 10]
+      ].forEach(function (r) {
+        var row = el('div', 'fustep');
+        var lft = el('div', 'fsl');
+        if (r[0]) lft.appendChild(tileStrip(r[0], { small: true }));
+        row.appendChild(lft);
+        row.appendChild(el('div', 'fsm', '<b>' + r[1] + '</b><span>' + r[2] + '</span>'));
+        row.appendChild(el('div', 'fsr', '+' + r[3] + '符'));
+        fx.appendChild(row);
       });
-      var trf = el('tr', 'sum');
-      trf.appendChild(el('td', '', '合計（10符単位に切り上げ）'));
-      trf.appendChild(el('td', 'num', '36符 → 40符'));
-      fx.appendChild(trf);
+      var last = el('div', 'fustep sumrow');
+      last.appendChild(el('div', 'fsl', ''));
+      last.appendChild(el('div', 'fsm', '<b>合計</b><span>36符のような半端な数は、上の10まで上げます（36→40、42→50）</span>'));
+      last.appendChild(el('div', 'fsr', '36 → 40符'));
+      fx.appendChild(last);
       wrap.appendChild(fx);
+      note('符に出てくる数は <b>20・25・30・40・50・60…</b> だけです。'
+        + '<b>ほとんどの手は30符か40符</b>に落ち着きます。');
 
-      /* ---- ③翻 ---- */
-      wrap.appendChild(el('h3', '', '③ 翻（はん）とは'));
-      wrap.appendChild(el('div', 'note',
-        '<b>手の「値打ち」の倍率です。</b><br>'
-        + '役が1つで1翻、ドラは1枚で1翻。<b>1翻増えると点数はおよそ2倍</b>になります。'
-        + '<b>役が1つも無いとあがれません</b>（ドラは役ではないので、ドラだけではあがれません）。'));
+      /* ---- 5. 待ち ---- */
+      h3('s5', '待ちの5つの形（符が変わります）');
+      note('<b>左が手元に持っていた牌、赤があがった牌</b>です。この形だけで符が変わります。');
+      var waits = [
+        [[20, 21], [19], '両面（リャンメン）', '2索でも5索でもあがれる。いちばん当たりやすいので符は付きません', '0符'],
+        [[20, 22], [21], '嵌張（カンチャン）', 'まん中の1種類しかあがれない', '2符'],
+        [[18, 19], [20], '辺張（ペンチャン）', '1索2索で3索だけ、のような端の待ち', '2符'],
+        [[31], [31], '単騎（タンキ）', '最後の1枚が雀頭になる', '2符'],
+        [[27, 27, 31, 31], [31], '双碰（シャンポン）', '同じ牌2組を持ち、どちらかが刻子になる。東でも白でもあがれるので符は付きません', '0符']
+      ];
+      var wt = el('div', 'waitrows');
+      waits.forEach(function (w) {
+        var row = el('div', 'waitrow');
+        var top = el('div', 'wtop');
+        top.appendChild(tileStrip(w[0], { small: true }));
+        top.appendChild(el('span', 'plus', '＋'));
+        var win = tileStrip(w[1], { small: true });
+        win.firstChild.classList.add('winmark');
+        top.appendChild(win);
+        top.appendChild(el('span', 'wfu', w[4]));
+        row.appendChild(top);
+        row.appendChild(el('div', 'rr', '<b>' + w[2] + '</b>　' + w[3]));
+        wt.appendChild(row);
+      });
+      wrap.appendChild(wt);
+
+      /* ---- 6. 翻 ---- */
+      h3('s6', '3. 翻（はん）とは');
+      note('<b>手の「値打ち」の倍率です。</b>役が1つで1翻、ドラは1枚で1翻。'
+        + '<b>1翻増えると点数はおよそ2倍</b>になります。');
       wrap.appendChild(el('div', 'flow big2',
         '<span class="fbox">40符1翻<br>1300点</span><span class="farr">→</span>'
         + '<span class="fbox">2翻<br>2600点</span><span class="farr">→</span>'
         + '<span class="fbox">3翻<br>5200点</span><span class="farr">→</span>'
         + '<span class="fbox navy">4翻<br>8000点</span>'));
-      wrap.appendChild(el('div', 'note', '（子がロンしたときの点数。符と翻がそろえば、あとは表を引くだけです）'));
+      note('（子がロンしたときの点数）<b>符と翻の2つがそろえば、点数はもう決まります。</b>あとは早見表を引くだけです。');
 
-      /* ---- 画面の読み方 ---- */
-      wrap.appendChild(el('h3', '', '④ クイズの画面の読み方'));
+      /* ---- 7. 画面の読み方 ---- */
+      h3('s7', 'クイズの画面の読み方');
       var rows = [
         [function () {
           var b = el('div', 'situation');
@@ -1709,21 +1815,21 @@ var YAKU_LIST = [
           b.appendChild(el('span', 'chip', '自分は南家（子）'));
           b.appendChild(el('span', 'chip gold', 'ロン'));
           return b;
-        }, '場の風／自分の位置／どうあがったか。<b>親か子かで点数が変わります</b>（親は1.5倍）。場の風・自分の風は役になることがあります'],
+        }, '場の風／自分の位置／どうあがったか。<b>親か子かで点数が変わります</b>（親は1.5倍）'],
         [function () { return tileStrip([1, 2, 3, 13, 14, 15, 20, 21, 22, 31, 31]); },
-          '<b>手の内</b>。自分だけが見ている牌です。ここをかたまりに分けます'],
+          '<b>手の内</b>。自分だけが見ている牌です'],
         [function () {
           var w = el('span', 'wintile');
           w.appendChild(tileEl(3, {}));
           w.appendChild(el('small', '', 'ロン'));
           return w;
-        }, '<b>あがり牌</b>。最後に来た1枚で、右に離して置いてあります。<b>ロン（人の捨て牌）かツモ（自分で引いた）かで符も役も変わります</b>'],
+        }, '<b>あがり牌</b>。最後に来た1枚で、右に離して置いてあります'],
         [function () {
           var g = el('span', 'meld');
           [0, 1, 2].forEach(function () { g.appendChild(tileEl(33, { small: true })); });
           g.appendChild(el('small', '', 'ポン'));
           return g;
-        }, '<b>鳴いた面子</b>。みんなに見えている牌です。鳴くと消える役があります（リーチ・ツモ・平和など）'],
+        }, '<b>鳴いた面子</b>。みんなに見えている牌です'],
         [function () {
           var d = el('span', 'doraind');
           d.appendChild(el('small', '', 'ドラ表示牌'));
@@ -1731,7 +1837,7 @@ var YAKU_LIST = [
           return d;
         }, '<b>この牌の次がドラ</b>です。4筒が表示牌なら、ドラは5筒'],
         [function () { return el('span', 'doracount', 'この手のドラ <b>1</b> 枚'); },
-          '手の中にドラが何枚あるかを、こちらで数えて出しています。<b>1枚で1翻</b>']
+          '手の中にドラが何枚あるか。こちらで数えて出しています。<b>1枚で1翻</b>']
       ];
       var rt = el('div', 'readrows');
       rows.forEach(function (r) {
@@ -1744,27 +1850,27 @@ var YAKU_LIST = [
       });
       wrap.appendChild(rt);
 
-      /* ---- どこから始めるか ---- */
-      wrap.appendChild(el('h3', '', 'どこから始めますか'));
+      /* ---- 8. 始め方 ---- */
+      h3('s8', 'どこから始めますか');
       var startBox = el('div', 'starts');
       [
-        ['① まず役をおぼえる', '手を見て役を当てます。役が分かると、翻が数えられます', function () { showTab('yaku'); }],
-        ['② 符だけ練習する', '点数はまだ出しません。符を数えることだけに慣れます', function () {
+        ['1. まず役をおぼえる', '手を見て役を当てます。役が分かると翻が数えられます', function () { showTab('yaku'); }],
+        ['2. 符だけ練習する', '点数はまだ出しません。符を数えることだけに慣れます', function () {
           Drill.mode = 'fu'; Drill.level = 1; ST.set('mode', 'fu'); ST.set('level', 1);
           Drill.render(); Drill.next(); showTab('score');
         }],
-        ['③ 通しでやる（符→翻→点数）', '3つを続けて解きます。慣れてきたらこれ', function () {
+        ['3. 通しでやる（符→翻→点数）', '3つを続けて解きます。慣れてきたらこれ', function () {
           Drill.mode = 'all'; ST.set('mode', 'all');
           Drill.render(); Drill.next(); showTab('score');
         }],
-        ['④ 早見表だけ見る', '卓を囲んでいる最中は、ここを引くだけで足ります', function () { showTab('table'); }]
+        ['4. 早見表だけ見る', '卓を囲んでいる最中は、ここを引くだけで足ります', function () { showTab('table'); }]
       ].forEach(function (x) {
         var b = el('button', 'startb', '<b>' + x[0] + '</b><span>' + x[1] + '</span>');
         b.onclick = x[2];
         startBox.appendChild(b);
       });
       wrap.appendChild(startBox);
-      wrap.appendChild(el('div', 'note', 'この「はじめに」は、上のタブからいつでも戻ってこられます。'));
+      note('この「はじめに」は、上のタブからいつでも戻ってこられます。');
     }
   };
 
