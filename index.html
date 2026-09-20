@@ -300,7 +300,7 @@ footer{padding:14px 10px 0;font-size:11px;color:var(--gray);text-align:center}
 </head>
 <body>
 <header>
-  <h1>麻雀 点数計算ドリル<small>v0.7</small></h1>
+  <h1>麻雀 点数計算ドリル<small>v0.8</small></h1>
   <div class="tabs">
     <button class="tab" data-tab="game">ゲーム</button>
     <button class="tab" data-tab="intro">はじめに</button>
@@ -2235,31 +2235,59 @@ var YAKU_LIST = [
      ステージの中身
      ============================================================ */
 
-  /* 1-1 これは何の牌？ */
-  function genTileName() {
-    var t = Math.floor(Math.random() * 34);
+  /* まぎらわしい牌を集める（同じ数の別の色、となりの数、字牌どうし） */
+  function nearTiles(t) {
     var pool = [];
     if (t < 27) {
-      var n = tileNum(t), su = Math.floor(t / 9);
-      [0, 1, 2].forEach(function (x) { if (x !== su) pool.push(x * 9 + (n - 1)); });
-      if (n > 1) pool.push(t - 1);
-      if (n < 9) pool.push(t + 1);
+      var n = t % 9, su = Math.floor(t / 9);
+      [0, 1, 2].forEach(function (x) { if (x !== su) pool.push(x * 9 + n); });
+      if (n > 0) pool.push(t - 1);
+      if (n < 8) pool.push(t + 1);
     } else {
       for (var z = 27; z < 34; z++) if (z !== t) pool.push(z);
     }
-    var opts = uniq([tileName(t)].concat(shuf(pool).slice(0, 5).map(tileName))).slice(0, 4);
-    var view = el('div', 'bigtile');
-    view.appendChild(tileEl(t, {}));
+    return pool;
+  }
+
+  /* 1-2 その読みの牌はどれ？（読み → 牌をタップ） */
+  function genFindByYomi() {
+    var t = Math.floor(Math.random() * 34);
+    var opts = uniq([t].concat(shuf(nearTiles(t)))).slice(0, 6);
+    shuf(opts);
+    var groups = opts.map(function (x) { return { tiles: [x] }; });
     return {
-      type: 'choice', view: view, prompt: 'この牌はなんですか',
-      options: shuf(opts), correct: tileName(t),
-      explain: '<b>' + tileName(t) + '</b>です。卓では<b>「' + tileYomi(t) + '」</b>と呼びます。' + (t < 27
-        ? '数字の下の字が種類（萬＝マンズ、筒＝ピンズ、索＝ソーズ）'
-        : '東南西北と白發中は「字牌（じはい）」。順子は作れません')
+      type: 'tap', groups: groups, answer: [opts.indexOf(t)],
+      prompt: '<b>「' + tileYomi(t) + '」</b>はどれですか',
+      explain: '<b>' + tileYomi(t) + ' ＝ ' + tileName(t) + '</b>。'
+        + (t >= 27 ? '字牌は7つだけなので、先に覚えてしまうと楽です'
+          : '数（イー・リャン・サン・スー・ウー・ロー・チー・パー・キュー）と'
+          + '種類（マン・ピン・ソー）の組み合わせです')
     };
   }
 
-  /* 1-2 なんと読む？ */
+  /* 1-3 1・9・字牌（么九牌）をさがす */
+  var YAO = [0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33];
+  var MID = [];
+  for (var _m = 0; _m < 27; _m++) if (_m % 9 !== 0 && _m % 9 !== 8) MID.push(_m);
+  function genYaochu() {
+    var used = {}, tiles = [];
+    var want = 2 + Math.floor(Math.random() * 2);
+    while (tiles.length < want) { var y = pick(YAO); if (used[y]) continue; used[y] = 1; tiles.push(y); }
+    while (tiles.length < 6) { var m = pick(MID); if (used[m]) continue; used[m] = 1; tiles.push(m); }
+    shuf(tiles);
+    var groups = tiles.map(function (x) { return { tiles: [x] }; });
+    var ans = [];
+    tiles.forEach(function (x, i) { if (isYaochu(x)) ans.push(i); });
+    return {
+      type: 'tap', groups: groups, answer: ans,
+      prompt: '<b>1・9・字牌</b>を全部タップしてください',
+      explain: '1・9・字牌をまとめて<b>么九牌（ヤオチューハイ）</b>といいます。'
+        + '<b>刻子にすると符が倍</b>（2〜8なら暗刻4符、么九牌なら暗刻8符）。'
+        + 'また<b>1枚でも使うとタンヤオが消えます</b>。ここが分かれ目になるので、先に見分けられるようにします'
+    };
+  }
+
+  /* 1-1 なんと読む？ */
   function genTileYomi() {
     var t = Math.floor(Math.random() * 34);
     var pool = [];
@@ -2481,8 +2509,14 @@ var YAKU_LIST = [
 
   /* 3-2 翻を数える */
   function genHan() {
+    // 足すものが2つ以上ある手だけ出す（1つだけだと、答えがそのまま画面に書いてある）
+    function needsAdding(x) {
+      if (!x || x.answer.yakumanTimes) return false;
+      var n = x.answer.yaku.length + (x.answer.dora > 0 ? 1 : 0);
+      return n >= 2;
+    }
     var h = makeQuestion(2);
-    for (var i = 0; i < 200 && (!h || h.answer.yakumanTimes); i++) h = makeQuestion(2);
+    for (var i = 0; i < 400 && !needsAdding(h); i++) h = makeQuestion(2);
     var view = el('div', '');
     view.appendChild(M.handView(h, { grouped: true }));
     var yt = el('div', 'hintbox');
@@ -2535,11 +2569,12 @@ var YAKU_LIST = [
     { n: 3, name: '第3章　翻と点数', desc: '翻を数えて、点数まで言えるようにします' }
   ];
   var STAGES = [
-    { id: '1-1', ch: 1, name: '牌の名前', hint: 'この牌はなに？', n: 6, gen: genTileName },
-    { id: '1-2', ch: 1, name: 'なんと読む？', hint: '2筒は「リャンピン」。卓で口に出す呼び名', n: 6, gen: genTileYomi },
-    { id: '1-3', ch: 1, name: '順子か刻子か', hint: '3枚のかたまりは2種類だけ', n: 6, gen: genShunKou },
-    { id: '1-4', ch: 1, name: '刻子をさがす', hint: '手の中から同じ牌3枚を見つける', n: 5, gen: genFindKou },
-    { id: '1-5', ch: 1, name: '雀頭をさがす', hint: '同じ牌2枚の組を見つける', n: 5, gen: genFindPair },
+    { id: '1-1', ch: 1, name: 'なんと読む？', hint: '2筒は「リャンピン」。卓で口に出す呼び名', n: 6, gen: genTileYomi },
+    { id: '1-2', ch: 1, name: 'その牌はどれ？', hint: '読みを聞いて、牌をタップで選ぶ', n: 6, gen: genFindByYomi },
+    { id: '1-3', ch: 1, name: '1・9・字牌をさがす', hint: 'ここが符とタンヤオの分かれ目', n: 5, gen: genYaochu },
+    { id: '1-4', ch: 1, name: '順子か刻子か', hint: '3枚のかたまりは2種類だけ', n: 6, gen: genShunKou },
+    { id: '1-5', ch: 1, name: '刻子をさがす', hint: '手の中から同じ牌3枚を見つける', n: 5, gen: genFindKou },
+    { id: '1-6', ch: 1, name: '雀頭をさがす', hint: '同じ牌2枚の組を見つける', n: 5, gen: genFindPair },
     { id: '2-1', ch: 2, name: '刻子の符', hint: '刻子1つが何符になるか', n: 6, gen: genKouFu },
     { id: '2-2', ch: 2, name: '待ちを見分ける', hint: '待ちの形で符が変わる', n: 6, gen: genWait },
     { id: '2-3', ch: 2, name: '符を積み上げる', hint: 'タップすると符が積み上がる', n: 4, gen: genBuildFu },
@@ -2808,7 +2843,7 @@ var YAKU_LIST = [
     wrap.appendChild(box);
   }
 
-  window.MJGame = { render: renderList, reset: function () { ST.set('prog', {}); } };
+  window.MJGame = { render: renderList, reset: function () { ST.set('prog', {}); }, _stages: STAGES };
 })();
 
 </script>

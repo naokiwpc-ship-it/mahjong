@@ -1,5 +1,5 @@
-/* 麻雀ドリル v0.7 */
-const CACHE = 'mahjong-v0.7';
+/* 麻雀ドリル v0.8 */
+const CACHE = 'mahjong-v0.8';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
