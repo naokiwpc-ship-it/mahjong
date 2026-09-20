@@ -289,11 +289,18 @@ footer{padding:14px 10px 0;font-size:11px;color:var(--gray);text-align:center}
 .big2{width:100%;appearance:none;border:1.5px solid var(--line);background:#fff;color:var(--navy);border-radius:9px;
   padding:12px;font-size:14px;font-weight:700;margin-top:8px;cursor:pointer;font-family:inherit}
 
+/* ---------- v0.7 読み方 ---------- */
+.grid.yomi th.ycell{text-align:center;padding:3px;width:52px}
+.grid.yomi td{text-align:center;font-size:13px;font-weight:700;color:var(--navy)}
+.yomirow{display:flex;flex-wrap:wrap;gap:8px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;justify-content:center}
+.yomicell{display:flex;flex-direction:column;align-items:center;gap:3px}
+.yomicell small{font-size:11px;font-weight:700;color:var(--navy)}
+
 </style>
 </head>
 <body>
 <header>
-  <h1>麻雀 点数計算ドリル<small>v0.6</small></h1>
+  <h1>麻雀 点数計算ドリル<small>v0.7</small></h1>
   <div class="tabs">
     <button class="tab" data-tab="game">ゲーム</button>
     <button class="tab" data-tab="intro">はじめに</button>
@@ -359,6 +366,18 @@ function isHonor(t) { return t >= 27; }
 function isTerminal(t) { return t < 27 && (t % 9 === 0 || t % 9 === 8); }  // 1・9
 function isYaochu(t) { return isHonor(t) || isTerminal(t); }
 function isGreen(t) { return [19, 20, 21, 23, 25, 32].indexOf(t) >= 0; }   // 2,3,4,6,8索 と發
+
+/* 読み方（卓で口に出す呼び名）。1〜9は イー/リャン/サン/スー/ウー/ロー/チー/パー/キュー。
+   9筒だけ「チューピン」になるのが例外。 */
+var NUM_YOMI = ['イー', 'リャン', 'サン', 'スー', 'ウー', 'ロー', 'チー', 'パー', 'キュー'];
+var HONOR_YOMI = ['トン', 'ナン', 'シャー', 'ペー', 'ハク', 'ハツ', 'チュン'];
+function tileYomi(t) {
+  if (t >= 27) return HONOR_YOMI[t - 27];
+  var n = t % 9, su = Math.floor(t / 9);
+  var head = NUM_YOMI[n];
+  if (su === 1 && n === 8) head = 'チュー';      // 9筒＝チューピン
+  return head + ['マン', 'ピン', 'ソー'][su];
+}
 
 function tileName(t) {
   if (t >= 27) return HONOR_NAMES[t - 27];
@@ -1760,7 +1779,7 @@ var YAKU_LIST = [
 
       /* ---- もくじ ---- */
       var toc = el('div', 'toc');
-      [['s1', 'そもそも点数はどう決まるか'], ['s2', 'ことばの意味'], ['s3', 'かたまりに分ける'],
+      [['s1', 'そもそも点数はどう決まるか'], ['s0', '牌の読み方'], ['s2', 'ことばの意味'], ['s3', 'かたまりに分ける'],
       ['s4', '符（ふ）とは'], ['s5', '待ちの5つの形'], ['s6', '翻（はん）とは'],
       ['s9', 'ドラとは'], ['s7', '画面の読み方'], ['s8', 'どこから始めますか']].forEach(function (x) {
         var b = el('button', 'tocb', x[1]);
@@ -1807,6 +1826,38 @@ var YAKU_LIST = [
         + '<span class="fbox">3. 翻を数える</span><span class="farr">→</span>'
         + '<span class="fbox navy">4. 点数</span>'));
       note('「何符ですか」と出たら、それは<b>2番を聞かれている</b>ということです。');
+
+      /* ---- 牌の読み方 ---- */
+      h3('s0', '牌の読み方（卓で口に出す呼び名）');
+      note('<b>「2筒」と書いて「リャンピン」と読みます。</b>'
+        + '数は <b>イー・リャン・サン・スー・ウー・ロー・チー・パー・キュー</b>。'
+        + 'そのうしろに種類（マン・ピン・ソー）を付けるだけです。');
+      var yt2 = el('table', 'grid nums yomi');
+      var yh = el('tr');
+      ['', '萬子（マンズ）', '筒子（ピンズ）', '索子（ソーズ）'].forEach(function (x) { yh.appendChild(el('th', '', x)); });
+      yt2.appendChild(yh);
+      for (var yn = 0; yn < 9; yn++) {
+        var tr2 = el('tr');
+        var th2 = el('th', 'ycell');
+        th2.appendChild(tileEl(yn, { small: true }));
+        tr2.appendChild(th2);
+        [0, 1, 2].forEach(function (su) {
+          var td = el('td', '', tileYomi(su * 9 + yn));
+          tr2.appendChild(td);
+        });
+        yt2.appendChild(tr2);
+      }
+      wrap.appendChild(yt2);
+      note('<b>例外は1つだけ ─ 9筒は「キューピン」ではなく「チューピン」</b>です。');
+      var zt = el('div', 'yomirow');
+      for (var zz = 27; zz < 34; zz++) {
+        var c = el('div', 'yomicell');
+        c.appendChild(tileEl(zz, {}));
+        c.appendChild(el('small', '', tileYomi(zz)));
+        zt.appendChild(c);
+      }
+      wrap.appendChild(zt);
+      note('字牌（東南西北白發中）は、この7つの呼び方をそのまま覚えます。');
 
       /* ---- 2. ことばの意味 ---- */
       h3('s2', 'ことばの意味');
@@ -2202,13 +2253,39 @@ var YAKU_LIST = [
     return {
       type: 'choice', view: view, prompt: 'この牌はなんですか',
       options: shuf(opts), correct: tileName(t),
-      explain: '<b>' + tileName(t) + '</b>です。' + (t < 27
+      explain: '<b>' + tileName(t) + '</b>です。卓では<b>「' + tileYomi(t) + '」</b>と呼びます。' + (t < 27
         ? '数字の下の字が種類（萬＝マンズ、筒＝ピンズ、索＝ソーズ）'
         : '東南西北と白發中は「字牌（じはい）」。順子は作れません')
     };
   }
 
-  /* 1-2 順子か刻子か */
+  /* 1-2 なんと読む？ */
+  function genTileYomi() {
+    var t = Math.floor(Math.random() * 34);
+    var pool = [];
+    if (t < 27) {
+      var n = t % 9, su = Math.floor(t / 9);
+      [0, 1, 2].forEach(function (x) { if (x !== su) pool.push(x * 9 + n); });
+      if (n > 0) pool.push(t - 1);
+      if (n < 8) pool.push(t + 1);
+    } else {
+      for (var z = 27; z < 34; z++) if (z !== t) pool.push(z);
+    }
+    var opts = uniq([tileYomi(t)].concat(shuf(pool).map(tileYomi))).slice(0, 4);
+    var view = el('div', 'bigtile');
+    view.appendChild(tileEl(t, {}));
+    view.appendChild(el('div', 'bigcap', '書くと <b>' + tileName(t) + '</b>'));
+    return {
+      type: 'choice', view: view, prompt: 'この牌は、なんと読みますか',
+      options: shuf(opts), correct: tileYomi(t),
+      explain: '<b>' + tileYomi(t) + '</b>（' + tileName(t) + '）。'
+        + (t >= 27 ? '字牌は漢字そのままの呼び方をします'
+          : '数は イー・リャン・サン・スー・ウー・ロー・チー・パー・キュー。'
+          + '<b>9筒だけ「チューピン」</b>になるのが例外です')
+    };
+  }
+
+  /* 1-3 順子か刻子か */
   function genShunKou() {
     var isShun = Math.random() < 0.5;
     var tiles, a;
@@ -2458,10 +2535,11 @@ var YAKU_LIST = [
     { n: 3, name: '第3章　翻と点数', desc: '翻を数えて、点数まで言えるようにします' }
   ];
   var STAGES = [
-    { id: '1-1', ch: 1, name: '牌を読む', hint: 'この牌はなに？', n: 6, gen: genTileName },
-    { id: '1-2', ch: 1, name: '順子か刻子か', hint: '3枚のかたまりは2種類だけ', n: 6, gen: genShunKou },
-    { id: '1-3', ch: 1, name: '刻子をさがす', hint: '手の中から同じ牌3枚を見つける', n: 5, gen: genFindKou },
-    { id: '1-4', ch: 1, name: '雀頭をさがす', hint: '同じ牌2枚の組を見つける', n: 5, gen: genFindPair },
+    { id: '1-1', ch: 1, name: '牌の名前', hint: 'この牌はなに？', n: 6, gen: genTileName },
+    { id: '1-2', ch: 1, name: 'なんと読む？', hint: '2筒は「リャンピン」。卓で口に出す呼び名', n: 6, gen: genTileYomi },
+    { id: '1-3', ch: 1, name: '順子か刻子か', hint: '3枚のかたまりは2種類だけ', n: 6, gen: genShunKou },
+    { id: '1-4', ch: 1, name: '刻子をさがす', hint: '手の中から同じ牌3枚を見つける', n: 5, gen: genFindKou },
+    { id: '1-5', ch: 1, name: '雀頭をさがす', hint: '同じ牌2枚の組を見つける', n: 5, gen: genFindPair },
     { id: '2-1', ch: 2, name: '刻子の符', hint: '刻子1つが何符になるか', n: 6, gen: genKouFu },
     { id: '2-2', ch: 2, name: '待ちを見分ける', hint: '待ちの形で符が変わる', n: 6, gen: genWait },
     { id: '2-3', ch: 2, name: '符を積み上げる', hint: 'タップすると符が積み上がる', n: 4, gen: genBuildFu },
