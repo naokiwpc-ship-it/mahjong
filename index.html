@@ -202,11 +202,21 @@ footer{padding:14px 10px 0;font-size:11px;color:var(--gray);text-align:center}
 .wtop .plus{font-size:12px;color:var(--gray)}
 .wfu{margin-left:auto;font-size:13px;font-weight:800;color:var(--navy);white-space:nowrap}
 
+/* ---------- v0.4 ドラの節 ---------- */
+.doraexs{background:#fff;border:1px solid var(--line);border-radius:10px;padding:2px 10px;margin-bottom:10px}
+.doraex{display:flex;align-items:flex-end;gap:7px;padding:10px 0;border-bottom:1px dashed var(--line);flex-wrap:wrap}
+.doraex:last-child{border-bottom:0}
+.dcell{display:flex;flex-direction:column;align-items:center;gap:2px}
+.dcell small{font-size:10px;color:var(--gray)}
+.darr{font-size:14px;color:var(--gray);padding-bottom:12px}
+.dnote{font-size:12px;color:#333;line-height:1.55;flex:1 1 100%;margin-top:2px}
+.dnote b{color:var(--navy)}
+
 </style>
 </head>
 <body>
 <header>
-  <h1>麻雀 点数計算ドリル<small>v0.3</small></h1>
+  <h1>麻雀 点数計算ドリル<small>v0.4</small></h1>
   <div class="tabs">
     <button class="tab" data-tab="intro">はじめに</button>
     <button class="tab" data-tab="score">点数の練習</button>
@@ -1670,7 +1680,7 @@ var YAKU_LIST = [
       var toc = el('div', 'toc');
       [['s1', '点数が決まる順番'], ['s2', 'ことばの意味'], ['s3', 'かたまりに分ける'],
       ['s4', '符（ふ）とは'], ['s5', '待ちの5つの形'], ['s6', '翻（はん）とは'],
-      ['s7', '画面の読み方'], ['s8', 'どこから始めますか']].forEach(function (x) {
+      ['s9', 'ドラとは'], ['s7', '画面の読み方'], ['s8', 'どこから始めますか']].forEach(function (x) {
         var b = el('button', 'tocb', x[1]);
         b.onclick = function () { document.getElementById(x[0]).scrollIntoView({ block: 'start' }); };
         toc.appendChild(b);
@@ -1696,12 +1706,12 @@ var YAKU_LIST = [
         [[20, 20], '雀頭（ジャントウ）', '<b>同じ牌2枚</b>。「アタマ」とも言います。1つの手に1組だけ'],
         [[22, 22, 22], '暗刻（アンコ）', '<b>鳴かずに自分でそろえた</b>刻子。符が高くなります'],
         [[33, 33, 33], '明刻（ミンコ）', '<b>ポンでそろえた</b>刻子。人から1枚もらっているので符は半分'],
-        [null, '門前（メンゼン）', '<b>一度も鳴いていない</b>状態。リーチできるのはこのときだけ'],
+        [null, '門前（メンゼン）', '一度も<b>ポン・チー・カン（明カン）をしていない</b>状態。リーチできるのはこのときだけ。<b>暗カンは鳴きに入らない</b>ので門前のままです'],
         [null, 'ツモ ／ ロン', '<b>ツモ</b>＝自分で引いてあがる。<b>ロン</b>＝人の捨て牌であがる'],
         [null, '待ち', '<b>あと1枚でアガリ</b>という形。5つの型があります（下の節）'],
         [null, '副底（フーテイ）', '<b>どの手にも最初から付く20符</b>。符はここから数え始めます'],
-        [null, '役（やく）', 'あがりの形についている<b>型の名前</b>。リーチ・タンヤオなど。<b>役が1つも無いとあがれません</b>'],
-        [null, 'ドラ', '<b>おまけの1翻</b>。1枚で1翻増えます。ただし<b>ドラは役ではない</b>ので、ドラだけではあがれません']
+        [null, '役（やく）', 'あがりの形についている<b>型の名前</b>。たとえば<b>タンヤオ</b>（1・9・字牌を1枚も使わない）、<b>役牌</b>（白・發・中や自分の風を3枚そろえる）、<b>リーチ</b>（門前であと1枚の状態で宣言する）。<b>役が1つも無いとあがれません</b>'],
+        [null, 'ドラ', '<b>持っているだけで1枚1翻増える、おまけの牌</b>。どの牌がドラになるかは局ごとに変わります（下の「ドラとは」の節）']
       ];
       var wl = el('div', 'readrows');
       words.forEach(function (w) {
@@ -1805,6 +1815,56 @@ var YAKU_LIST = [
         + '<span class="fbox">3翻<br>5200点</span><span class="farr">→</span>'
         + '<span class="fbox navy">4翻<br>8000点</span>'));
       note('（子がロンしたときの点数）<b>符と翻の2つがそろえば、点数はもう決まります。</b>あとは早見表を引くだけです。');
+
+      /* ---- ドラ ---- */
+      h3('s9', 'ドラとは');
+      note('<b>持っているだけで1翻増える、おまけの牌です。</b>どの牌がドラになるかは、<b>局ごとに変わります</b>。');
+      wrap.appendChild(el('div', 'flow big2',
+        '<span class="fbox">局のはじめに<br>山の1枚がめくられる</span><span class="farr">→</span>'
+        + '<span class="fbox">それが<br>ドラ表示牌</span><span class="farr">→</span>'
+        + '<span class="fbox navy">その<b>次の牌</b>が<br>ドラ</span>'));
+      note('<b>めくられた牌そのものはドラではありません。その「次の牌」がドラです。</b>'
+        + 'いちばん間違えやすいところです。');
+
+      var dr = el('div', 'doraexs');
+      [[12, 13, '4筒の<b>次</b>なので5筒'],
+      [8, 0, '<b>9の次は1に戻ります</b>（9萬→1萬）'],
+      [30, 27, '<b>北の次は東に戻ります</b>（東→南→西→北→東）'],
+      [33, 31, '<b>中の次は白に戻ります</b>（白→發→中→白）']].forEach(function (x) {
+        var row = el('div', 'doraex');
+        var a = el('div', 'dcell');
+        a.appendChild(el('small', '', 'ドラ表示牌'));
+        a.appendChild(tileEl(x[0], {}));
+        row.appendChild(a);
+        row.appendChild(el('span', 'darr', '→'));
+        var b = el('div', 'dcell');
+        b.appendChild(el('small', '', 'ドラ'));
+        b.appendChild(tileEl(x[1], {}));
+        row.appendChild(b);
+        row.appendChild(el('div', 'dnote', x[2]));
+        dr.appendChild(row);
+      });
+      wrap.appendChild(dr);
+
+      note('<b>あとは、自分の手の中にドラが何枚あるかを数えるだけです。</b>'
+        + '5筒がドラのとき、手の中に5筒が2枚あれば<b>ドラ2 ＝ 2翻ふえる</b>。'
+        + 'このアプリでは、その枚数をこちらで数えて「この手のドラ ○枚」と出しています。');
+
+      var extra = el('div', 'readrows');
+      [[function () { return tileEl(13, { aka: true }); },
+        '<b>赤い5（赤ドラ）</b>は、ドラ表示牌と関係なく、それ1枚で1翻。手の中にあればそのまま数えます'],
+      [null, '<b>裏ドラ</b>＝リーチしてあがったときだけ、もう1枚めくられる追加のドラ。運のボーナスです'],
+      [null, '<b>カンをすると</b>、新しいドラ表示牌がもう1枚めくられ、ドラが増えます']].forEach(function (x) {
+        var line = el('div', 'readrow');
+        if (x[0]) { var l = el('div', 'rl'); l.appendChild(x[0]()); line.appendChild(l); }
+        line.appendChild(el('div', 'rr', x[1]));
+        extra.appendChild(line);
+      });
+      wrap.appendChild(extra);
+
+      note('<b>ここだけは覚えてください ─ ドラは役ではありません。</b>'
+        + '役が1つも無ければ、ドラが5枚あってもあがれません。'
+        + 'ドラは「あがれたときに点数を上げてくれるもの」です。');
 
       /* ---- 7. 画面の読み方 ---- */
       h3('s7', 'クイズの画面の読み方');
