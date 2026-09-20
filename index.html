@@ -186,7 +186,7 @@ footer{padding:14px 10px 0;font-size:11px;color:var(--gray);text-align:center}
 </head>
 <body>
 <header>
-  <h1>麻雀 点数計算ドリル<small>v0.2</small></h1>
+  <h1>麻雀 点数計算ドリル<small>v0.2.1</small></h1>
   <div class="tabs">
     <button class="tab" data-tab="intro">はじめに</button>
     <button class="tab" data-tab="score">点数の練習</button>
@@ -1784,8 +1784,10 @@ var YAKU_LIST = [
   window.addEventListener('DOMContentLoaded', function () {
     $$('.tab').forEach(function (b) { b.onclick = function () { showTab(b.dataset.tab); }; });
     Drill.start();
-    // はじめて開いた人には、クイズでなく「はじめに」を出す
-    showTab(ST.get('tab', 'intro'));
+    // 「はじめに」は、まだ一度も見ていない人には必ず出す
+    // （前の版を使っていた端末は最後に開いたタブを覚えているため、それだと入口を通らない）
+    if (!ST.get('seenIntro', false)) { ST.set('seenIntro', true); showTab('intro'); }
+    else showTab(ST.get('tab', 'intro'));
     $('#reset').onclick = function () {
       if (!confirm('成績と「まちがえた手」を消します。よろしいですか')) return;
       ['stat', 'ystat', 'weak'].forEach(function (k) { localStorage.removeItem('mj_' + k); });
