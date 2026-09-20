@@ -34,7 +34,7 @@ header h1 small{font-weight:400;opacity:.8;font-size:11px;margin-left:6px}
 .tabs{display:flex;gap:4px}
 .tab{
   flex:1; appearance:none; border:0; background:rgba(255,255,255,.12); color:#fff;
-  padding:9px 4px; font-size:13px; border-radius:7px 7px 0 0; font-weight:600; cursor:pointer;
+  padding:9px 2px; font-size:12px; border-radius:7px 7px 0 0; font-weight:600; cursor:pointer; white-space:nowrap;
   font-family:inherit;
 }
 .tab.on{background:#f7f8fa;color:var(--navy)}
@@ -156,17 +156,48 @@ footer{padding:14px 10px 0;font-size:11px;color:var(--gray);text-align:center}
   header h1,.tabs{max-width:640px;margin-left:auto;margin-right:auto}
 }
 
+/* ---------- v0.2 はじめに・かたまり表示 ---------- */
+.lead{background:var(--navy);color:#fff;border-radius:10px;padding:12px 13px;font-size:13.5px;line-height:1.7;margin-bottom:12px}
+.lead b{font-size:15px}
+.grouprow{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin:4px 0 2px}
+.mgroup{display:flex;flex-direction:column;align-items:center}
+.mtiles{display:flex}
+.mgroup small{font-size:10px;color:var(--gray);margin-top:3px;white-space:nowrap}
+.tile.winmark{box-shadow:0 0 0 2px var(--red);border-color:var(--red)}
+.groupnote{font-size:11.5px;color:var(--gray);margin-top:7px}
+.groupnote b{color:var(--red)}
+.termline{background:var(--face);border-radius:7px;padding:7px 9px;font-size:12px;color:#333;margin-bottom:9px;line-height:1.6}
+.termline b{color:var(--navy)}
+.moreb{appearance:none;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:99px;padding:1px 9px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:700;margin-left:3px}
+.readrows{background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 10px;margin-bottom:10px}
+.readrow{display:flex;flex-direction:column;gap:5px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.readrow:last-child{border-bottom:0}
+.rl{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-end}
+.rr{font-size:12.5px;color:#333;line-height:1.65}
+.rr b{color:var(--navy)}
+.starts{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.startb{appearance:none;text-align:left;border:1.5px solid var(--navy);background:#fff;border-radius:10px;padding:11px 13px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;gap:3px}
+.startb b{font-size:14px;color:var(--navy)}
+.startb span{font-size:11.5px;color:var(--gray);line-height:1.5}
+.startb:active{background:var(--face)}
+.flow.big2 .fbox{text-align:center;line-height:1.35}
+
 </style>
 </head>
 <body>
 <header>
-  <h1>麻雀 点数計算ドリル<small>v0.1</small></h1>
+  <h1>麻雀 点数計算ドリル<small>v0.2</small></h1>
   <div class="tabs">
-    <button class="tab" data-tab="score">点数を計算する</button>
-    <button class="tab" data-tab="yaku">役をおぼえる</button>
-    <button class="tab" data-tab="table">早見表・ルール</button>
+    <button class="tab" data-tab="intro">はじめに</button>
+    <button class="tab" data-tab="score">点数の練習</button>
+    <button class="tab" data-tab="yaku">役の練習</button>
+    <button class="tab" data-tab="table">早見表</button>
   </div>
 </header>
+
+<section class="page" id="page-intro">
+  <div id="introBody"></div>
+</section>
 
 <section class="page" id="page-score">
   <div id="drillHead"></div>
@@ -1020,8 +1051,48 @@ var YAKU_LIST = [
     return w;
   }
 
-  /* ---------------- 手牌の表示 ---------------- */
-  function handView(hand) {
+  /* 面子ごとに離して並べる。「どこからどこが1つのかたまりか」が見えないと符は数えられない */
+  function groupedRow(hand) {
+    var iv = hand.answer.iv, ctx = hand.ctx;
+    var nMelds = hand.melds.length;
+    var row = el('div', 'grouprow');
+    var akaLeft = ctx.akaCount ? 1 : 0;
+    var winDone = false;
+
+    function addGroup(tiles, label, winIdx) {
+      var g = el('span', 'mgroup');
+      var t2 = el('span', 'mtiles');
+      tiles.forEach(function (t, i) {
+        var aka = false;
+        if (akaLeft && t === ctx.akaTile) { aka = true; akaLeft--; }
+        var e = tileEl(t, { aka: aka });
+        if (winIdx === i && !winDone) { e.classList.add('winmark'); winDone = true; }
+        t2.appendChild(e);
+      });
+      g.appendChild(t2);
+      g.appendChild(el('small', '', label));
+      row.appendChild(g);
+    }
+
+    // 牌の順に並べ替える（手元でそろえるときと同じ並びにする）
+    var conc = [];
+    for (var k = nMelds; k < iv.sets.length; k++) conc.push({ s: iv.sets[k], k: k });
+    conc.sort(function (a, b) { return a.s.tile - b.s.tile; });
+
+    conc.forEach(function (o) {
+      var s = o.s;
+      var tiles = s.t === 'shun' ? [s.tile, s.tile + 1, s.tile + 2] : [s.tile, s.tile, s.tile];
+      var wi = (iv.winIn === o.k) ? tiles.indexOf(hand.winTile) : -1;
+      addGroup(tiles, s.t === 'shun' ? '順子' : '刻子', wi);
+    });
+    addGroup([iv.pair, iv.pair], '雀頭', iv.winIn === 'pair' ? 0 : -1);
+    return row;
+  }
+
+  /* ---------------- 手牌の表示 ----------------
+     grouped=true のときは、面子ごとに離して置く（どこからどこが1つのかたまりか見えるように） */
+  function handView(hand, opts) {
+    opts = opts || {};
     var box = el('div', 'handbox');
     var ctx = hand.ctx;
 
@@ -1034,22 +1105,28 @@ var YAKU_LIST = [
     if (ctx.isIppatsu) bar.appendChild(el('span', 'chip red', '一発'));
     box.appendChild(bar);
 
-    // 手の内（和了牌を1枚抜く）
-    var conc = hand.concealed.slice();
-    conc[hand.winTile]--;
-    var list = [];
-    for (var t = 0; t < 34; t++) {
-      for (var i = 0; i < conc[t]; i++) {
-        list.push({ t: t, aka: (t === ctx.akaTile && i === 0 && ctx.akaCount) });
+    if (opts.grouped && hand.answer && hand.answer.iv.kind === 'standard') {
+      box.appendChild(groupedRow(hand));
+      box.appendChild(el('div', 'groupnote', '赤い枠が<b>あがり牌</b>（'
+        + (ctx.isTsumo ? '自分で引いてきた牌' : '人が捨てた牌をロンした') + '）。かたまりごとに離して置いてあります'));
+    } else {
+      // 手の内（和了牌を1枚抜いて、右に離して置く）
+      var conc = hand.concealed.slice();
+      conc[hand.winTile]--;
+      var list = [];
+      for (var t = 0; t < 34; t++) {
+        for (var i = 0; i < conc[t]; i++) {
+          list.push({ t: t, aka: (t === ctx.akaTile && i === 0 && ctx.akaCount) });
+        }
       }
+      var row = el('div', 'handrow');
+      row.appendChild(tilesRow(list));
+      var win = el('span', 'wintile');
+      win.appendChild(tileEl(hand.winTile, {}));
+      win.appendChild(el('small', '', ctx.isTsumo ? 'ツモ' : 'ロン'));
+      row.appendChild(win);
+      box.appendChild(row);
     }
-    var row = el('div', 'handrow');
-    row.appendChild(tilesRow(list));
-    var win = el('span', 'wintile');
-    win.appendChild(tileEl(hand.winTile, {}));
-    win.appendChild(el('small', '', ctx.isTsumo ? 'ツモ' : 'ロン'));
-    row.appendChild(win);
-    box.appendChild(row);
 
     // 副露・暗槓
     if (hand.melds.length) {
@@ -1152,13 +1229,14 @@ var YAKU_LIST = [
      点数ドリル
      ============================================================ */
   var Drill = {
-    hand: null, step: 0, steps: [], mode: 'all', level: 1,
+    hand: null, step: 0, steps: [], mode: 'fu', level: 1, grouped: true,
     stat: ST.get('stat', { n: 0, ok: 0, streak: 0, best: 0 }),
     weak: ST.get('weak', []),
 
     start: function () {
-      this.mode = ST.get('mode', 'all');
+      this.mode = ST.get('mode', 'fu');
       this.level = ST.get('level', 1);
+      this.grouped = ST.get('grouped', true);
       this.render();
       this.next();
     },
@@ -1182,7 +1260,7 @@ var YAKU_LIST = [
     paint: function () {
       var wrap = $('#drillBody');
       wrap.innerHTML = '';
-      wrap.appendChild(handView(this.hand));
+      wrap.appendChild(handView(this.hand, { grouped: this.grouped }));
       if (this.step < this.steps.length) {
         wrap.appendChild(this.questionView(this.steps[this.step]));
       } else {
@@ -1200,6 +1278,16 @@ var YAKU_LIST = [
       var label = { fu: 'この手は何符ですか', han: 'この手は何翻ですか（ドラ込み）', score: '何点になりますか' }[kind];
       if (ev.yakumanTimes && kind === 'han') label = '役満です。点数へ進みます';
       box.appendChild(el('div', 'qtitle', (this.steps.length > 1 ? '<span class="stepno">' + (this.step + 1) + '/3</span>' : '') + label));
+
+      // 何を聞かれているのかを、その場に置く
+      var term = {
+        fu: '<b>符（ふ）</b>＝手の「形」の点数。20から数え始めて、刻子・雀頭・待ちの形・ツモ/ロンで足していきます',
+        han: '<b>翻（はん）</b>＝手の「値打ち」。役が1つで1翻、ドラは1枚で1翻',
+        score: '符と翻がそろえば点数は決まります。子のロンは 基本点×4、親のロンは×6'
+      }[kind];
+      var tline = el('div', 'termline', term + ' <button class="moreb">くわしく</button>');
+      tline.querySelector('.moreb').onclick = function () { showTab('intro'); };
+      box.appendChild(tline);
 
       var opts, correct;
       if (kind === 'fu') { opts = fuOptions(ev.fu).map(String); correct = String(ev.fu); }
@@ -1281,6 +1369,15 @@ var YAKU_LIST = [
         l.appendChild(b);
       });
       head.appendChild(l);
+      var g = el('div', 'seg');
+      var gb = el('button', 'segb' + (self.grouped ? ' on' : ''),
+        'かたまりに分けて見せる：' + (self.grouped ? 'オン' : 'オフ'));
+      gb.onclick = function () {
+        self.grouped = !self.grouped; ST.set('grouped', self.grouped);
+        self.render(); self.paint();
+      };
+      g.appendChild(gb);
+      head.appendChild(g);
     }
   };
 
@@ -1318,10 +1415,14 @@ var YAKU_LIST = [
     paint: function () {
       var self = this, wrap = $('#yakuBody');
       wrap.innerHTML = '';
-      wrap.appendChild(handView(this.hand));
+      wrap.appendChild(handView(this.hand, { grouped: Drill.grouped }));
       var q = yakuQuiz(this.hand);
       var box = el('div', 'qbox');
       box.appendChild(el('div', 'qtitle', 'この手についている役はどれですか'));
+      var tl = el('div', 'termline', '<b>役（やく）</b>＝あがりの形についている「型」。'
+        + '<b>役が1つも無いとあがれません</b> <button class="moreb">くわしく</button>');
+      tl.querySelector('.moreb').onclick = function () { showTab('intro'); };
+      box.appendChild(tl);
       var g = el('div', 'opts wide');
       q.options.forEach(function (o) {
         var b = el('button', 'opt', o);
@@ -1525,12 +1626,156 @@ var YAKU_LIST = [
   ].join('');
 
   /* ============================================================
+     はじめに（開いたら最初に出る1枚）
+     ============================================================ */
+  function tileStrip(codes, opts) {
+    var s = el('span', 'tiles');
+    codes.forEach(function (c) { s.appendChild(tileEl(c, opts || {})); });
+    return s;
+  }
+
+  var Intro = {
+    render: function () {
+      var wrap = $('#introBody');
+      wrap.innerHTML = '';
+
+      wrap.appendChild(el('div', 'lead',
+        '<b>麻雀の点数を、自分で言えるようになるためのアプリです。</b><br>'
+        + '手牌を見て「何符・何翻・何点」を当てる練習と、卓でそのまま引ける早見表が入っています。'));
+
+      /* ---- 点数が決まる順番 ---- */
+      wrap.appendChild(el('h3', '', '点数は、この順で決まります'));
+      wrap.appendChild(el('div', 'flow big2',
+        '<span class="fbox">①かたまりに分ける</span><span class="farr">→</span>'
+        + '<span class="fbox">②符を数える</span><span class="farr">→</span>'
+        + '<span class="fbox">③翻を数える</span><span class="farr">→</span>'
+        + '<span class="fbox navy">④点数</span>'));
+      wrap.appendChild(el('div', 'note',
+        'このアプリのクイズは、この①〜④のどこかを1つずつ聞いています。'
+        + '「何符ですか」と出たら、それは<b>②を聞かれている</b>ということです。'));
+
+      /* ---- ①かたまりに分ける ---- */
+      wrap.appendChild(el('h3', '', '① かたまりに分ける'));
+      wrap.appendChild(el('div', 'note',
+        'あがりの形は、<b>3枚のかたまりが4つ＋同じ牌2枚（雀頭）</b>の14枚です。'
+        + '3枚のかたまりは2種類しかありません。'));
+      var g1 = el('div', 'grouprow');
+      [[[1, 2, 3], '順子（続き数字3枚）'], [[31, 31, 31], '刻子（同じ牌3枚）'], [[20, 20], '雀頭（同じ牌2枚）']].forEach(function (x) {
+        var g = el('span', 'mgroup');
+        g.appendChild(tileStrip(x[0]));
+        g.appendChild(el('small', '', x[1]));
+        g1.appendChild(g);
+      });
+      wrap.appendChild(g1);
+      wrap.appendChild(el('div', 'note',
+        'クイズでは「やさしい」のあいだ、この<b>かたまりごとに離して</b>並べます。慣れてきたらボタンで1列に戻せます。'));
+
+      /* ---- ②符 ---- */
+      wrap.appendChild(el('h3', '', '② 符（ふ）とは'));
+      wrap.appendChild(el('div', 'note',
+        '<b>手の「形」を数字にしたものです。点数のもとになります。</b><br>'
+        + '20から数え始めて、刻子・雀頭・待ちの形・ツモかロンかで足していきます。'
+        + '最後に10符単位へ切り上げ。<b>ほとんどの手は30符か40符</b>に落ち着きます。'));
+      var fx = el('table', 'futable');
+      [['副底（どの手にも付く土台）', '20符'], ['暗刻 5索（自分で3枚そろえた）', '4符'],
+      ['単騎待ち（最後の1枚が雀頭）', '2符'], ['門前でロン（鳴いていない）', '10符']].forEach(function (r) {
+        var tr = el('tr'); tr.appendChild(el('td', '', r[0])); tr.appendChild(el('td', 'num', r[1])); fx.appendChild(tr);
+      });
+      var trf = el('tr', 'sum');
+      trf.appendChild(el('td', '', '合計（10符単位に切り上げ）'));
+      trf.appendChild(el('td', 'num', '36符 → 40符'));
+      fx.appendChild(trf);
+      wrap.appendChild(fx);
+
+      /* ---- ③翻 ---- */
+      wrap.appendChild(el('h3', '', '③ 翻（はん）とは'));
+      wrap.appendChild(el('div', 'note',
+        '<b>手の「値打ち」の倍率です。</b><br>'
+        + '役が1つで1翻、ドラは1枚で1翻。<b>1翻増えると点数はおよそ2倍</b>になります。'
+        + '<b>役が1つも無いとあがれません</b>（ドラは役ではないので、ドラだけではあがれません）。'));
+      wrap.appendChild(el('div', 'flow big2',
+        '<span class="fbox">40符1翻<br>1300点</span><span class="farr">→</span>'
+        + '<span class="fbox">2翻<br>2600点</span><span class="farr">→</span>'
+        + '<span class="fbox">3翻<br>5200点</span><span class="farr">→</span>'
+        + '<span class="fbox navy">4翻<br>8000点</span>'));
+      wrap.appendChild(el('div', 'note', '（子がロンしたときの点数。符と翻がそろえば、あとは表を引くだけです）'));
+
+      /* ---- 画面の読み方 ---- */
+      wrap.appendChild(el('h3', '', '④ クイズの画面の読み方'));
+      var rows = [
+        [function () {
+          var b = el('div', 'situation');
+          b.appendChild(el('span', 'chip navy', '東場'));
+          b.appendChild(el('span', 'chip', '自分は南家（子）'));
+          b.appendChild(el('span', 'chip gold', 'ロン'));
+          return b;
+        }, '場の風／自分の位置／どうあがったか。<b>親か子かで点数が変わります</b>（親は1.5倍）。場の風・自分の風は役になることがあります'],
+        [function () { return tileStrip([1, 2, 3, 13, 14, 15, 20, 21, 22, 31, 31]); },
+          '<b>手の内</b>。自分だけが見ている牌です。ここをかたまりに分けます'],
+        [function () {
+          var w = el('span', 'wintile');
+          w.appendChild(tileEl(3, {}));
+          w.appendChild(el('small', '', 'ロン'));
+          return w;
+        }, '<b>あがり牌</b>。最後に来た1枚で、右に離して置いてあります。<b>ロン（人の捨て牌）かツモ（自分で引いた）かで符も役も変わります</b>'],
+        [function () {
+          var g = el('span', 'meld');
+          [0, 1, 2].forEach(function () { g.appendChild(tileEl(33, { small: true })); });
+          g.appendChild(el('small', '', 'ポン'));
+          return g;
+        }, '<b>鳴いた面子</b>。みんなに見えている牌です。鳴くと消える役があります（リーチ・ツモ・平和など）'],
+        [function () {
+          var d = el('span', 'doraind');
+          d.appendChild(el('small', '', 'ドラ表示牌'));
+          d.appendChild(tileEl(12, { small: true }));
+          return d;
+        }, '<b>この牌の次がドラ</b>です。4筒が表示牌なら、ドラは5筒'],
+        [function () { return el('span', 'doracount', 'この手のドラ <b>1</b> 枚'); },
+          '手の中にドラが何枚あるかを、こちらで数えて出しています。<b>1枚で1翻</b>']
+      ];
+      var rt = el('div', 'readrows');
+      rows.forEach(function (r) {
+        var line = el('div', 'readrow');
+        var left = el('div', 'rl');
+        left.appendChild(r[0]());
+        line.appendChild(left);
+        line.appendChild(el('div', 'rr', r[1]));
+        rt.appendChild(line);
+      });
+      wrap.appendChild(rt);
+
+      /* ---- どこから始めるか ---- */
+      wrap.appendChild(el('h3', '', 'どこから始めますか'));
+      var startBox = el('div', 'starts');
+      [
+        ['① まず役をおぼえる', '手を見て役を当てます。役が分かると、翻が数えられます', function () { showTab('yaku'); }],
+        ['② 符だけ練習する', '点数はまだ出しません。符を数えることだけに慣れます', function () {
+          Drill.mode = 'fu'; Drill.level = 1; ST.set('mode', 'fu'); ST.set('level', 1);
+          Drill.render(); Drill.next(); showTab('score');
+        }],
+        ['③ 通しでやる（符→翻→点数）', '3つを続けて解きます。慣れてきたらこれ', function () {
+          Drill.mode = 'all'; ST.set('mode', 'all');
+          Drill.render(); Drill.next(); showTab('score');
+        }],
+        ['④ 早見表だけ見る', '卓を囲んでいる最中は、ここを引くだけで足ります', function () { showTab('table'); }]
+      ].forEach(function (x) {
+        var b = el('button', 'startb', '<b>' + x[0] + '</b><span>' + x[1] + '</span>');
+        b.onclick = x[2];
+        startBox.appendChild(b);
+      });
+      wrap.appendChild(startBox);
+      wrap.appendChild(el('div', 'note', 'この「はじめに」は、上のタブからいつでも戻ってこられます。'));
+    }
+  };
+
+  /* ============================================================
      タブ
      ============================================================ */
   function showTab(name) {
     $$('.tab').forEach(function (b) { b.classList.toggle('on', b.dataset.tab === name); });
     $$('.page').forEach(function (p) { p.classList.toggle('on', p.id === 'page-' + name); });
     ST.set('tab', name);
+    if (name === 'intro') Intro.render();
     if (name === 'table') Table.render();
     if (name === 'yaku' && !YakuDrill.hand) YakuDrill.next();
     window.scrollTo(0, 0);
@@ -1539,7 +1784,8 @@ var YAKU_LIST = [
   window.addEventListener('DOMContentLoaded', function () {
     $$('.tab').forEach(function (b) { b.onclick = function () { showTab(b.dataset.tab); }; });
     Drill.start();
-    showTab(ST.get('tab', 'score'));
+    // はじめて開いた人には、クイズでなく「はじめに」を出す
+    showTab(ST.get('tab', 'intro'));
     $('#reset').onclick = function () {
       if (!confirm('成績と「まちがえた手」を消します。よろしいですか')) return;
       ['stat', 'ystat', 'weak'].forEach(function (k) { localStorage.removeItem('mj_' + k); });
