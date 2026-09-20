@@ -212,11 +212,14 @@ footer{padding:14px 10px 0;font-size:11px;color:var(--gray);text-align:center}
 .dnote{font-size:12px;color:#333;line-height:1.55;flex:1 1 100%;margin-top:2px}
 .dnote b{color:var(--navy)}
 
+/* ---------- v0.5 小見出し ---------- */
+.page h4{font-size:13px;color:var(--gold);margin:12px 0 5px;font-weight:700}
+
 </style>
 </head>
 <body>
 <header>
-  <h1>麻雀 点数計算ドリル<small>v0.4</small></h1>
+  <h1>麻雀 点数計算ドリル<small>v0.5</small></h1>
   <div class="tabs">
     <button class="tab" data-tab="intro">はじめに</button>
     <button class="tab" data-tab="score">点数の練習</button>
@@ -1678,7 +1681,7 @@ var YAKU_LIST = [
 
       /* ---- もくじ ---- */
       var toc = el('div', 'toc');
-      [['s1', '点数が決まる順番'], ['s2', 'ことばの意味'], ['s3', 'かたまりに分ける'],
+      [['s1', 'そもそも点数はどう決まるか'], ['s2', 'ことばの意味'], ['s3', 'かたまりに分ける'],
       ['s4', '符（ふ）とは'], ['s5', '待ちの5つの形'], ['s6', '翻（はん）とは'],
       ['s9', 'ドラとは'], ['s7', '画面の読み方'], ['s8', 'どこから始めますか']].forEach(function (x) {
         var b = el('button', 'tocb', x[1]);
@@ -1688,14 +1691,43 @@ var YAKU_LIST = [
       wrap.appendChild(toc);
 
       /* ---- 1. 順番 ---- */
-      h3('s1', '点数は、この順で決まります');
+      h3('s1', 'そもそも、点数はどう決まるのか');
+      note('<b>麻雀の点数は、1つの数字では決まりません。「符」と「翻」という2つの数字の、かけ算で決まります。</b>'
+        + 'ここが他のゲームと違うところで、いちばん分かりにくいところです。');
+      wrap.appendChild(el('div', 'flow big2',
+        '<span class="fbox">符<br>手の「形」から出る数</span><span class="farr">×</span>'
+        + '<span class="fbox">翻<br>役とドラで増える倍率</span>'
+        + '<span class="farr">＝</span><span class="fbox navy">点数</span>'));
+      note('<b>たとえるなら、符が「値札」、翻が「○倍」のクーポンです。</b>'
+        + '値札が高いほど、同じクーポンでも高くなります。');
+
+      wrap.appendChild(el('h4', '', 'なぜ2つも要るのか'));
+      note('<b>翻だけでは、大ざっぱすぎるからです。</b>'
+        + '翻は1つ増えると点数がおよそ2倍になります。'
+        + '<b>1翻1300点 → 2翻2600点 → 3翻5200点</b>と飛び飛びで、その間がありません。'
+        + '<b>その「間」を埋める細かい目盛りが符です。</b>');
+      var cmp = el('table', 'grid nums');
+      var hr0 = el('tr');
+      hr0.appendChild(el('th', '', '同じ2翻でも'));
+      hr0.appendChild(el('th', '', '点数（子のロン）'));
+      cmp.appendChild(hr0);
+      [['30符', '2000点'], ['40符', '2600点'], ['50符', '3200点'], ['60符', '3900点']].forEach(function (r) {
+        var tr = el('tr');
+        tr.appendChild(el('th', '', r[0]));
+        tr.appendChild(el('td', '', r[1]));
+        cmp.appendChild(tr);
+      });
+      wrap.appendChild(cmp);
+      note('<b>例えが崩れるところも先に言っておきます。</b>'
+        + '符は好きな数になるわけではなく、<b>20・25・30・40・50・60…</b> と決まった値札しかありません。');
+
+      wrap.appendChild(el('h4', '', 'だからクイズは、この順で聞いています'));
       wrap.appendChild(el('div', 'flow big2',
         '<span class="fbox">1. かたまりに分ける</span><span class="farr">→</span>'
         + '<span class="fbox">2. 符を数える</span><span class="farr">→</span>'
         + '<span class="fbox">3. 翻を数える</span><span class="farr">→</span>'
         + '<span class="fbox navy">4. 点数</span>'));
-      note('クイズは、この1〜4のどれかを1つずつ聞いています。'
-        + '「何符ですか」と出たら、それは<b>2番を聞かれている</b>ということです。');
+      note('「何符ですか」と出たら、それは<b>2番を聞かれている</b>ということです。');
 
       /* ---- 2. ことばの意味 ---- */
       h3('s2', 'ことばの意味');
@@ -1734,10 +1766,23 @@ var YAKU_LIST = [
 
       /* ---- 4. 符 ---- */
       h3('s4', '2. 符（ふ）とは');
-      note('<b>同じ役でも、そろえるのが難しい形ほど点数が高くなります。その「形の難しさ」を数字にしたのが符です。</b><br>'
-        + '副底の20から始めて、<b>刻子・雀頭・待ちの形・ツモかロンか</b>で足していきます。'
-        + '<b>順子（続き数字3枚）は1符にもなりません</b>。だから符が増えるのは、ほとんど刻子と待ちのせいです。');
-      note('実際に1つの手で数えてみます。<b>下の手を、2筒でロンしてあがった</b>としましょう。');
+      note('<b>符は、手の「形」で決まります。そろえるのが難しい形ほど、値札が高くなります。</b>'
+        + 'どんな手にも最初から20符あり（これを副底といいます）、そこに足していきます。');
+      var fw = el('div', 'readrows');
+      [['同じ牌3枚（刻子）を、鳴かずに自分でそろえた', '<b>+4符</b>（1・9・字牌なら+8符）'],
+      ['続き数字3枚（順子）', '<b>0符。1符にもなりません</b>'],
+      ['最後の1枚の待ちが、当てにくい形だった', '<b>+2符</b>'],
+      ['鳴かずに、人の捨て牌であがった（門前ロン）', '<b>+10符</b>']].forEach(function (x) {
+        var line = el('div', 'readrow');
+        line.appendChild(el('div', 'rr', x[0] + '　→　' + x[1]));
+        fw.appendChild(line);
+      });
+      wrap.appendChild(fw);
+      note('<b>つまり、符が増えるのはほとんど「刻子」と「待ち」のせいです。</b>順子がいくつあっても符は増えません。');
+      note('<b>そして、先に言ってしまうと ─ ほとんどの手は30符か40符です。</b>'
+        + '符に出てくる数は 20・25・30・40・50・60… だけ。'
+        + '<b>迷ったら、まず30符か40符を疑ってください。</b>それだけで、かなりの手が当たります。');
+      note('では、実際に1つの手で数えてみます。<b>下の手を、2筒でロンしてあがった</b>としましょう。');
 
       var ex = el('div', 'grouprow');
       [[[1, 2, 3], '順子'], [[15, 16, 17], '順子'], [[20, 21, 22], '順子'],
@@ -1776,8 +1821,7 @@ var YAKU_LIST = [
       last.appendChild(el('div', 'fsr', '36 → 40符'));
       fx.appendChild(last);
       wrap.appendChild(fx);
-      note('符に出てくる数は <b>20・25・30・40・50・60…</b> だけです。'
-        + '<b>ほとんどの手は30符か40符</b>に落ち着きます。');
+      note('この手は40符でした。<b>やはり30符か40符に落ち着きます。</b>');
 
       /* ---- 5. 待ち ---- */
       h3('s5', '待ちの5つの形（符が変わります）');
