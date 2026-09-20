@@ -215,18 +215,97 @@ footer{padding:14px 10px 0;font-size:11px;color:var(--gray);text-align:center}
 /* ---------- v0.5 小見出し ---------- */
 .page h4{font-size:13px;color:var(--gold);margin:12px 0 5px;font-weight:700}
 
+/* ---------- v0.6 ゲーム ---------- */
+.gprog{margin-bottom:12px}
+.gpbar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.gpbar i{display:block;height:100%;background:var(--navy);border-radius:99px;transition:width .4s}
+.gptext{font-size:12px;color:var(--gray);margin-top:5px}
+.gptext b{color:var(--navy);font-size:14px}
+.chdesc{font-size:12px;color:var(--gray);margin:-2px 0 8px}
+.stagelist{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.stagecard{appearance:none;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;
+  padding:10px 12px;cursor:pointer;font-family:inherit;display:grid;
+  grid-template-columns:auto 1fr auto;grid-template-areas:"id name star" "id hint star";gap:0 9px;align-items:center}
+.stagecard .sid{grid-area:id;font-size:11px;font-weight:800;color:#fff;background:var(--navy);border-radius:6px;padding:3px 6px}
+.stagecard .sname{grid-area:name;font-size:14px;font-weight:700;color:var(--navy)}
+.stagecard .shint{grid-area:hint;font-size:11.5px;color:var(--gray)}
+.stagecard .sstar{grid-area:star;font-size:13px;color:var(--gold);letter-spacing:1px}
+.stagecard.locked{opacity:.5;cursor:default;border-style:dashed}
+.stagecard.locked .sid{background:var(--gray)}
+.stagecard.cleared{border-color:var(--green)}
+.stagecard.cleared .sid{background:var(--green)}
+.stagecard:not(.locked):active{background:var(--face)}
+
+.ghead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.gback{appearance:none;border:1px solid var(--line);background:#fff;color:var(--gray);border-radius:99px;
+  padding:5px 11px;font-size:11.5px;cursor:pointer;font-family:inherit}
+.gtitle{font-size:13.5px;font-weight:700;color:var(--navy)}
+.gdots{display:flex;gap:4px;margin-left:auto}
+.gdot{width:9px;height:9px;border-radius:99px;background:var(--line)}
+.gdot.done{background:var(--green)}
+.gdot.now{background:var(--navy)}
+
+.bigtile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 0 4px}
+.bigtile .tile{width:calc(var(--tw)*1.5);height:calc(var(--tw)*2.07)}
+.bigcap{font-size:12px;color:#444;text-align:center;line-height:1.6}
+.bigcap b{color:var(--navy)}
+.scoreq{display:flex;align-items:center;gap:8px}
+.sq{background:var(--face);color:var(--navy);font-size:20px;font-weight:800;border-radius:9px;padding:8px 14px}
+.sqx{color:var(--gray)}
+
+.grouprow.gtap{gap:10px}
+.gbox{border:2px solid transparent;border-radius:9px;padding:5px 6px 3px;transition:all .15s}
+.gbox.tappable{border-color:var(--line);cursor:pointer;background:#fff}
+.gbox.tappable:active{background:var(--face)}
+.gbox.picked{border-color:var(--green);background:#E8F3EC}
+.gbox.nope{border-color:var(--red);background:#FDF3F3}
+
+.fumeter{display:flex;align-items:baseline;justify-content:center;gap:5px;background:var(--navy);color:#fff;
+  border-radius:10px;padding:9px 12px;margin-bottom:8px}
+.fmlabel{font-size:12px;opacity:.85}
+.fmval{font-size:30px;font-weight:800;line-height:1}
+.fmunit{font-size:14px}
+.fulines{margin-bottom:10px}
+.fuline{display:flex;justify-content:space-between;font-size:12.5px;color:#333;padding:3px 2px;border-bottom:1px dotted var(--line)}
+.fuline b{color:var(--navy)}
+
+.hintbox{background:#FFF8E7;border:1px solid #e6d9b8;border-radius:8px;padding:8px 10px;font-size:12.5px;color:#4a3d22;margin-top:8px;line-height:1.6}
+.hintbox b{color:var(--gold)}
+
+.result{border-radius:10px;padding:11px;margin-top:10px}
+.result.good{background:#E8F3EC;border:1px solid var(--green)}
+.result.bad{background:#FDF3F3;border:1px solid var(--red)}
+.rtitle{font-weight:800;font-size:15px;margin-bottom:5px}
+.result.good .rtitle{color:var(--green)}
+.result.bad .rtitle{color:var(--red)}
+
+.clearbox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 14px;text-align:center}
+.clearbox.ok{border-color:var(--green)}
+.ctitle{font-size:19px;font-weight:800;color:var(--navy)}
+.clearbox.ok .ctitle{color:var(--green)}
+.cstars{font-size:30px;color:var(--gold);letter-spacing:4px;margin:8px 0}
+.cscore{font-size:13px;color:var(--gray);margin-bottom:12px}
+.cscore b{color:var(--navy);font-size:16px}
+.big2{width:100%;appearance:none;border:1.5px solid var(--line);background:#fff;color:var(--navy);border-radius:9px;
+  padding:12px;font-size:14px;font-weight:700;margin-top:8px;cursor:pointer;font-family:inherit}
+
 </style>
 </head>
 <body>
 <header>
-  <h1>麻雀 点数計算ドリル<small>v0.5</small></h1>
+  <h1>麻雀 点数計算ドリル<small>v0.6</small></h1>
   <div class="tabs">
+    <button class="tab" data-tab="game">ゲーム</button>
     <button class="tab" data-tab="intro">はじめに</button>
     <button class="tab" data-tab="score">点数の練習</button>
     <button class="tab" data-tab="yaku">役の練習</button>
     <button class="tab" data-tab="table">早見表</button>
   </div>
 </header>
+
+<section class="page" id="page-game">
+  <div id="gameBody"></div>
+</section>
 
 <section class="page" id="page-intro">
   <div id="introBody"></div>
@@ -1958,6 +2037,7 @@ var YAKU_LIST = [
       h3('s8', 'どこから始めますか');
       var startBox = el('div', 'starts');
       [
+        ['0. ゲームで1から覚える', '牌の見分けから順に、タップしながら覚えます。まずはここから', function () { showTab('game'); }],
         ['1. まず役をおぼえる', '手を見て役を当てます。役が分かると翻が数えられます', function () { showTab('yaku'); }],
         ['2. 符だけ練習する', '点数はまだ出しません。符を数えることだけに慣れます', function () {
           Drill.mode = 'fu'; Drill.level = 1; ST.set('mode', 'fu'); ST.set('level', 1);
@@ -1985,28 +2065,672 @@ var YAKU_LIST = [
     $$('.tab').forEach(function (b) { b.classList.toggle('on', b.dataset.tab === name); });
     $$('.page').forEach(function (p) { p.classList.toggle('on', p.id === 'page-' + name); });
     ST.set('tab', name);
+    if (name === 'game' && window.MJGame) window.MJGame.render();
     if (name === 'intro') Intro.render();
     if (name === 'table') Table.render();
     if (name === 'yaku' && !YakuDrill.hand) YakuDrill.next();
     window.scrollTo(0, 0);
   }
 
+  /* ゲーム側（game.js）に道具を渡す */
+  window.MJ = {
+    el: el, $: $, $$: $$, ST: ST,
+    tileEl: tileEl, tileStrip: tileStrip,
+    handView: handView, explainView: explainView, groupedRow: groupedRow,
+    showTab: function (n) { showTab(n); }
+  };
+
   window.addEventListener('DOMContentLoaded', function () {
     $$('.tab').forEach(function (b) { b.onclick = function () { showTab(b.dataset.tab); }; });
     Drill.start();
     // 「はじめに」は、まだ一度も見ていない人には必ず出す
     // （前の版を使っていた端末は最後に開いたタブを覚えているため、それだと入口を通らない）
-    if (!ST.get('seenIntro', false)) { ST.set('seenIntro', true); showTab('intro'); }
-    else showTab(ST.get('tab', 'intro'));
+    // はじめて開いた人は、説明ではなくゲームの第1ステージから
+    if (!ST.get('seenGame', false)) { ST.set('seenGame', true); showTab('game'); }
+    else showTab(ST.get('tab', 'game'));
     $('#reset').onclick = function () {
-      if (!confirm('成績と「まちがえた手」を消します。よろしいですか')) return;
-      ['stat', 'ystat', 'weak'].forEach(function (k) { localStorage.removeItem('mj_' + k); });
+      if (!confirm('成績・まちがえた手・ゲームのステージの進み具合を、全部消します。よろしいですか')) return;
+      ['stat', 'ystat', 'weak', 'prog'].forEach(function (k) { localStorage.removeItem('mj_' + k); });
+      if (window.MJGame) window.MJGame.render();
       Drill.stat = { n: 0, ok: 0, streak: 0, best: 0 };
       YakuDrill.stat = { n: 0, ok: 0, streak: 0, best: 0 };
       Drill.weak = [];
       Drill.paintStat(); YakuDrill.paintStat();
     };
   });
+})();
+
+</script>
+<script>
+/* ============================================================
+   麻雀 点数計算ドリル — ゲーム（ステージ式）
+   読ませずに、タップさせて覚える。
+   ステージをクリアすると次が開く。☆は正解数で決まる。
+   ============================================================ */
+(function () {
+  'use strict';
+  var M = window.MJ;                     // ui.js が出している道具
+  var el = M.el, $ = M.$, $$ = M.$$, ST = M.ST, tileEl = M.tileEl, tileStrip = M.tileStrip;
+
+  /* ---------- 小道具 ---------- */
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function shuf(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function uniq(a) { var s = {}, o = []; a.forEach(function (x) { if (!s[x]) { s[x] = 1; o.push(x); } }); return o; }
+
+  /* 面子ごとに並べた箱（ラベルなし・タップできる） */
+  function groupBoxes(groups, onTap) {
+    var row = el('div', 'grouprow gtap');
+    groups.forEach(function (g, i) {
+      var box = el('span', 'mgroup gbox');
+      var t = el('span', 'mtiles');
+      g.tiles.forEach(function (c, j) {
+        var e = tileEl(c, {});
+        if (g.win === j) e.classList.add('winmark');
+        t.appendChild(e);
+      });
+      box.appendChild(t);
+      if (g.label) box.appendChild(el('small', '', g.label));
+      if (onTap) { box.onclick = function () { onTap(i, box); }; box.classList.add('tappable'); }
+      row.appendChild(box);
+    });
+    return row;
+  }
+
+  /* すでに数えた面子に印を付ける（再描画で消えないように） */
+  function markPicked(row, picked) {
+    var boxes = row.querySelectorAll('.gbox');
+    picked.forEach(function (i) { if (boxes[i]) { boxes[i].classList.add('picked'); boxes[i].classList.remove('tappable'); } });
+  }
+
+  /* 手牌を面子の組にほどく（core の答えを使う） */
+  function groupsOf(hand) {
+    var iv = hand.answer.iv, n = hand.melds.length, out = [];
+    for (var k = n; k < iv.sets.length; k++) {
+      var s = iv.sets[k];
+      out.push({
+        tiles: s.t === 'shun' ? [s.tile, s.tile + 1, s.tile + 2] : [s.tile, s.tile, s.tile],
+        kind: s.t, tile: s.tile, idx: k,
+        win: iv.winIn === k ? (s.t === 'shun' ? hand.winTile - s.tile : 0) : -1
+      });
+    }
+    out.sort(function (a, b) { return a.tile - b.tile; });
+    out.push({ tiles: [iv.pair, iv.pair], kind: 'pair', tile: iv.pair, idx: 'pair', win: iv.winIn === 'pair' ? 0 : -1 });
+    return out;
+  }
+
+  /* 門前ロン・刻子あり・槓なしの手だけ作る（積み上げの段で使う） */
+  function menzenRonHand() {
+    for (var i = 0; i < 600; i++) {
+      var h = makeQuestion(2);
+      if (!h) continue;
+      if (h.melds.length) continue;
+      if (h.ctx.isTsumo) continue;
+      if (h.answer.iv.kind !== 'standard') continue;
+      if (h.answer.fu > 60) continue;
+      // 双碰待ちは「ロンで完成した刻子＝明刻」になり符が半分。この段では出さない
+      if (h.answer.wait === 'shanpon') continue;
+      var gs = groupsOf(h);
+      var kous = gs.filter(function (g) { return g.kind === 'kou'; });
+      if (!kous.length) continue;
+      return { hand: h, groups: gs, kous: kous };
+    }
+    return null;
+  }
+
+  /* ============================================================
+     ステージの中身
+     ============================================================ */
+
+  /* 1-1 これは何の牌？ */
+  function genTileName() {
+    var t = Math.floor(Math.random() * 34);
+    var pool = [];
+    if (t < 27) {
+      var n = tileNum(t), su = Math.floor(t / 9);
+      [0, 1, 2].forEach(function (x) { if (x !== su) pool.push(x * 9 + (n - 1)); });
+      if (n > 1) pool.push(t - 1);
+      if (n < 9) pool.push(t + 1);
+    } else {
+      for (var z = 27; z < 34; z++) if (z !== t) pool.push(z);
+    }
+    var opts = uniq([tileName(t)].concat(shuf(pool).slice(0, 5).map(tileName))).slice(0, 4);
+    var view = el('div', 'bigtile');
+    view.appendChild(tileEl(t, {}));
+    return {
+      type: 'choice', view: view, prompt: 'この牌はなんですか',
+      options: shuf(opts), correct: tileName(t),
+      explain: '<b>' + tileName(t) + '</b>です。' + (t < 27
+        ? '数字の下の字が種類（萬＝マンズ、筒＝ピンズ、索＝ソーズ）'
+        : '東南西北と白發中は「字牌（じはい）」。順子は作れません')
+    };
+  }
+
+  /* 1-2 順子か刻子か */
+  function genShunKou() {
+    var isShun = Math.random() < 0.5;
+    var tiles, a;
+    if (isShun) { a = Math.floor(Math.random() * 3) * 9 + Math.floor(Math.random() * 7); tiles = [a, a + 1, a + 2]; }
+    else { a = Math.floor(Math.random() * 34); tiles = [a, a, a]; }
+    var view = el('div', 'bigtile');
+    view.appendChild(tileStrip(tiles));
+    return {
+      type: 'choice', view: view, prompt: 'この3枚は、どちらのかたまりですか',
+      options: ['順子（続き数字3枚）', '刻子（同じ牌3枚）'],
+      correct: isShun ? '順子（続き数字3枚）' : '刻子（同じ牌3枚）',
+      explain: isShun
+        ? '<b>順子（シュンツ）</b>＝同じ色の続き数字3枚。<b>符は1符も付きません</b>'
+        : '<b>刻子（コーツ）</b>＝同じ牌3枚。<b>ここが符のもとになります</b>'
+    };
+  }
+
+  /* 1-3 刻子をさがす（タップ） */
+  function genFindKou() {
+    var h = makeQuestion(2);
+    for (var i = 0; i < 300 && (!h || h.melds.length || h.answer.iv.kind !== 'standard'); i++) h = makeQuestion(2);
+    var gs = groupsOf(h);
+    var ans = [];
+    gs.forEach(function (g, i) { if (g.kind === 'kou') ans.push(i); });
+    return {
+      type: 'tap', groups: gs, answer: ans,
+      prompt: ans.length ? '<b>刻子（同じ牌3枚）</b>を全部タップしてください' : 'この手に刻子はありますか',
+      none: ans.length === 0, noneLabel: '刻子はない',
+      explain: ans.length
+        ? '刻子は<b>' + ans.length + 'つ</b>。残りは順子と雀頭です'
+        : 'この手は<b>順子だけ</b>。刻子が無い手は、符が増えません'
+    };
+  }
+
+  /* 1-4 雀頭をさがす（タップ） */
+  function genFindPair() {
+    var h = makeQuestion(2);
+    for (var i = 0; i < 300 && (!h || h.melds.length || h.answer.iv.kind !== 'standard'); i++) h = makeQuestion(2);
+    var gs = shuf(groupsOf(h));
+    var ans = [];
+    gs.forEach(function (g, i) { if (g.kind === 'pair') ans.push(i); });
+    return {
+      type: 'tap', groups: gs, answer: ans,
+      prompt: '<b>雀頭（同じ牌2枚）</b>をタップしてください',
+      explain: '雀頭は<b>1つの手に1組だけ</b>。2枚しかないので、見つけやすいところです'
+    };
+  }
+
+  /* 2-1 刻子の符 */
+  function genKouFu() {
+    var yao = Math.random() < 0.5;
+    var t = yao ? pick([0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33])
+      : pick([1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25]);
+    var an = Math.random() < 0.55;
+    var fu = (yao ? 4 : 2) * (an ? 2 : 1);
+    var view = el('div', 'bigtile');
+    view.appendChild(tileStrip([t, t, t]));
+    view.appendChild(el('div', 'bigcap',
+      (an ? '<b>鳴かずに自分でそろえた</b>（暗刻）' : '<b>ポンでそろえた</b>（明刻）')
+      + '<br>' + (yao ? '1・9・字牌' : '2〜8の牌')));
+    return {
+      type: 'choice', view: view, prompt: 'この刻子は何符ですか',
+      options: ['2符', '4符', '8符', '16符'], correct: fu + '符',
+      explain: '<b>' + (an ? '暗刻' : '明刻') + '・' + (yao ? '1・9・字牌' : '2〜8の牌') + ' → ' + fu + '符</b><br>'
+        + '2〜8は明刻2符・暗刻4符、1/9/字牌は明刻4符・暗刻8符。<b>鳴かずにそろえると倍</b>になります'
+    };
+  }
+
+  /* 2-2 待ちを見分ける */
+  var WAITS = [
+    { key: 'ryanmen', name: '両面（リャンメン）', fu: 0 },
+    { key: 'kanchan', name: '嵌張（カンチャン）', fu: 2 },
+    { key: 'penchan', name: '辺張（ペンチャン）', fu: 2 },
+    { key: 'tanki', name: '単騎（タンキ）', fu: 2 },
+    { key: 'shanpon', name: '双碰（シャンポン）', fu: 0 }
+  ];
+  function genWait() {
+    var w = pick(WAITS), su = Math.floor(Math.random() * 3) * 9, hold, win;
+    if (w.key === 'ryanmen') { var a = su + 1 + Math.floor(Math.random() * 5); hold = [a, a + 1]; win = Math.random() < 0.5 ? a - 1 : a + 2; }
+    else if (w.key === 'kanchan') { var b = su + Math.floor(Math.random() * 7); hold = [b, b + 2]; win = b + 1; }
+    else if (w.key === 'penchan') {
+      if (Math.random() < 0.5) { hold = [su, su + 1]; win = su + 2; } else { hold = [su + 7, su + 8]; win = su + 6; }
+    }
+    else if (w.key === 'tanki') { var c = Math.floor(Math.random() * 34); hold = [c]; win = c; }
+    else { var d = Math.floor(Math.random() * 34), e = (d + 5 + Math.floor(Math.random() * 20)) % 34; hold = [d, d, e, e]; win = Math.random() < 0.5 ? d : e; }
+    var view = el('div', 'bigtile');
+    var line = el('div', 'wtop');
+    line.appendChild(tileStrip(hold));
+    line.appendChild(el('span', 'plus', '＋'));
+    var wt = tileStrip([win]);
+    wt.firstChild.classList.add('winmark');
+    line.appendChild(wt);
+    view.appendChild(line);
+    view.appendChild(el('div', 'bigcap', '左が<b>持っていた牌</b>、赤が<b>あがった牌</b>'));
+    return {
+      type: 'choice', view: view, prompt: 'これはどの待ちですか',
+      options: shuf(WAITS.map(function (x) { return x.name; })), correct: w.name,
+      explain: '<b>' + w.name + ' → ' + (w.fu ? '+' + w.fu + '符' : '0符') + '</b><br>'
+        + (w.fu ? 'あがれる牌が少ない＝当てにくいので符が付きます' : 'あがれる牌が2種類ある＝当てやすいので符は付きません')
+    };
+  }
+
+  /* 2-3 符を積み上げる（この段がいちばん大事） */
+  function genBuildFu() {
+    var r = menzenRonHand();
+    if (!r) return genFuAnswer();
+    var h = r.hand, gs = r.groups;
+    var steps = [];
+    // ① 刻子をタップ
+    var kouIdx = [];
+    gs.forEach(function (g, i) { if (g.kind === 'kou') kouIdx.push(i); });
+    steps.push({
+      kind: 'tap', ask: '<b>刻子（同じ牌3枚）</b>を全部タップしてください', targets: kouIdx,
+      fuOf: function (i) {
+        var g = gs[i], base = isYaochu(g.tile) ? 4 : 2;
+        // ロンで完成した刻子は「明刻」あつかい（人から1枚もらっているので符は半分）
+        return (h.answer.iv.winIn === g.idx) ? base : base * 2;
+      },
+      labelOf: function (i) {
+        var g = gs[i];
+        return (h.answer.iv.winIn === g.idx ? '明刻 ' : '暗刻 ') + tileName(g.tile);
+      }
+    });
+    // ② 雀頭が役牌なら
+    var p = h.answer.iv.pair;
+    var pairFu = (p >= 31) || (p >= 27 && (p === 27 + h.ctx.seatWind || p === 27 + h.ctx.roundWind)) ? 2 : 0;
+    if (pairFu) {
+      var pi = gs.length - 1;
+      steps.push({
+        kind: 'tap', ask: '<b>雀頭が役牌（白發中・自分の風・場の風）</b>です。タップしてください', targets: [pi],
+        fuOf: function () { return 2; }, labelOf: function () { return '雀頭 ' + tileName(p) + '（役牌）'; }
+      });
+    }
+    // ③ 待ち
+    var wt = h.answer.wait;
+    var wobj = WAITS.filter(function (x) { return x.key === wt; })[0];
+    steps.push({
+      kind: 'choice', ask: '赤い枠が<b>あがり牌</b>です。どの待ちでしたか',
+      options: shuf(WAITS.map(function (x) { return x.name; })), correct: wobj.name,
+      fu: wobj.fu, label: wobj.name
+    });
+    // ④ あがり方
+    steps.push({
+      kind: 'choice', ask: 'この手は<b>一度も鳴いていません</b>。どうあがりましたか',
+      options: shuf(['門前でロン（＋10符）', 'ツモ（＋2符）']), correct: '門前でロン（＋10符）',
+      fu: 10, label: '門前でロン'
+    });
+    return { type: 'build', hand: h, groups: gs, steps: steps, total: h.answer.fu };
+  }
+
+  /* 2-4 符を言う */
+  function genFuAnswer() {
+    var h = makeQuestion(1);
+    for (var i = 0; i < 200 && !h; i++) h = makeQuestion(1);
+    return {
+      type: 'choice', view: M.handView(h, { grouped: true }), prompt: 'この手は何符ですか',
+      options: fuOptions(h.answer.fu).map(function (x) { return x + '符'; }), correct: h.answer.fu + '符',
+      explain: h.answer.fuLines.map(function (l) { return l.label + ' ' + l.fu + '符'; }).join('　／　')
+        + '<br><b>合計 ' + h.answer.fuRaw + '符 → ' + h.answer.fu + '符</b>'
+    };
+  }
+
+  /* 3-1 ドラを数える */
+  function genDora() {
+    var used = new Array(34).fill(0), tiles = [];
+    var ind = Math.floor(Math.random() * 34);
+    var dora = doraFromIndicator(ind);
+    var want = Math.random() < 0.25 ? 0 : 1 + Math.floor(Math.random() * 2);
+    for (var i = 0; i < want; i++) { if (used[dora] < 4) { used[dora]++; tiles.push(dora); } }
+    while (tiles.length < 13) {
+      var t = Math.floor(Math.random() * 34);
+      if (t === dora) continue;
+      if (used[t] >= 4) continue;
+      used[t]++; tiles.push(t);
+    }
+    tiles.sort(function (a, b) { return a - b; });
+    var real = tiles.filter(function (t) { return t === dora; }).length;
+    var view = el('div', '');
+    var dd = el('div', 'doraex');
+    var a = el('div', 'dcell');
+    a.appendChild(el('small', '', 'ドラ表示牌'));
+    a.appendChild(tileEl(ind, {}));
+    dd.appendChild(a);
+    view.appendChild(dd);
+    view.appendChild(tileStrip(tiles));
+    return {
+      type: 'choice', view: view, prompt: 'この手にドラは何枚ありますか',
+      options: ['0枚', '1枚', '2枚', '3枚'], correct: real + '枚',
+      explain: '<b>ドラ表示牌 ' + tileName(ind) + ' の次は ' + tileName(dora) + '</b>。'
+        + 'この手の中に ' + tileName(dora) + ' は<b>' + real + '枚</b>あります。1枚で1翻ふえます'
+    };
+  }
+
+  /* 3-2 翻を数える */
+  function genHan() {
+    var h = makeQuestion(2);
+    for (var i = 0; i < 200 && (!h || h.answer.yakumanTimes); i++) h = makeQuestion(2);
+    var view = el('div', '');
+    view.appendChild(M.handView(h, { grouped: true }));
+    var yt = el('div', 'hintbox');
+    yt.innerHTML = '<b>この手についている役</b><br>'
+      + h.answer.yaku.map(function (y) { return y.name + ' ' + y.han + '翻'; }).join('　／　')
+      + (h.answer.dora ? '<br>ドラ ' + h.answer.dora + '枚' : '<br>ドラ なし');
+    view.appendChild(yt);
+    return {
+      type: 'choice', view: view, prompt: '役とドラを足すと、何翻ですか',
+      options: hanOptions(h.answer.totalHan).map(function (x) { return x + '翻'; }),
+      correct: h.answer.totalHan + '翻',
+      explain: '役 ' + h.answer.yakuHan + '翻 ＋ ドラ ' + h.answer.dora + '翻 ＝ <b>' + h.answer.totalHan + '翻</b>'
+    };
+  }
+
+  /* 3-3 点数を言う */
+  function genScore() {
+    var fu = pick([30, 30, 40, 40, 50, 25, 60]);
+    var han = 1 + Math.floor(Math.random() * 4);
+    var dealer = Math.random() < 0.35;
+    var tsumo = Math.random() < 0.4;
+    if (fu === 25 && han === 1) han = 2;
+    var sc = score(fu, han, 0, dealer, tsumo, false);
+    var view = el('div', 'bigtile');
+    view.appendChild(el('div', 'scoreq',
+      '<span class="sq">' + fu + '符</span><span class="sqx">×</span><span class="sq">' + han + '翻</span>'));
+    view.appendChild(el('div', 'bigcap',
+      '<b>' + (dealer ? '親' : '子') + '</b>が<b>' + (tsumo ? 'ツモ' : 'ロン') + '</b>であがりました'));
+    var opts = [sc.text];
+    [[fu, han + 1], [fu, Math.max(1, han - 1)], [Math.min(110, fu + 10), han], [fu, han + 2]].forEach(function (x) {
+      if (opts.length >= 4) return;
+      var s2 = score(x[0], x[1], 0, dealer, tsumo, false);
+      if (opts.indexOf(s2.text) < 0) opts.push(s2.text);
+    });
+    return {
+      type: 'choice', view: view, prompt: '何点になりますか', options: shuf(opts), correct: sc.text,
+      explain: '基本点 ＝ ' + fu + '符 × 2の(2+' + han + ')乗 ＝ ' + sc.base + '<br>'
+        + (tsumo ? (dealer ? '親のツモ → 子3人から 基本点×2 ずつ' : '子のツモ → 親から×2、子から×1ずつ')
+          : (dealer ? '親のロン → 基本点×6' : '子のロン → 基本点×4'))
+        + ' ＝ <b>' + sc.text + '</b>'
+    };
+  }
+
+  /* ============================================================
+     ステージ一覧
+     ============================================================ */
+  var CHAPTERS = [
+    { n: 1, name: '第1章　牌とかたまり', desc: 'まず、牌と3枚のかたまりを見分けられるようにします' },
+    { n: 2, name: '第2章　符を積む', desc: '符が、どこからどう増えるのかを手を動かして覚えます' },
+    { n: 3, name: '第3章　翻と点数', desc: '翻を数えて、点数まで言えるようにします' }
+  ];
+  var STAGES = [
+    { id: '1-1', ch: 1, name: '牌を読む', hint: 'この牌はなに？', n: 6, gen: genTileName },
+    { id: '1-2', ch: 1, name: '順子か刻子か', hint: '3枚のかたまりは2種類だけ', n: 6, gen: genShunKou },
+    { id: '1-3', ch: 1, name: '刻子をさがす', hint: '手の中から同じ牌3枚を見つける', n: 5, gen: genFindKou },
+    { id: '1-4', ch: 1, name: '雀頭をさがす', hint: '同じ牌2枚の組を見つける', n: 5, gen: genFindPair },
+    { id: '2-1', ch: 2, name: '刻子の符', hint: '刻子1つが何符になるか', n: 6, gen: genKouFu },
+    { id: '2-2', ch: 2, name: '待ちを見分ける', hint: '待ちの形で符が変わる', n: 6, gen: genWait },
+    { id: '2-3', ch: 2, name: '符を積み上げる', hint: 'タップすると符が積み上がる', n: 4, gen: genBuildFu },
+    { id: '2-4', ch: 2, name: '符を言う', hint: '自分で数えて答える', n: 5, gen: genFuAnswer },
+    { id: '3-1', ch: 3, name: 'ドラを数える', hint: 'ドラ表示牌の次がドラ', n: 5, gen: genDora },
+    { id: '3-2', ch: 3, name: '翻を数える', hint: '役＋ドラ', n: 5, gen: genHan },
+    { id: '3-3', ch: 3, name: '点数を言う', hint: '符と翻から点数を出す', n: 5, gen: genScore }
+  ];
+
+  function prog() { return ST.get('prog', {}); }
+  function starsOf(id) { return prog()[id] || 0; }
+  function unlocked(i) {
+    if (i === 0) return true;
+    return starsOf(STAGES[i - 1].id) > 0;
+  }
+  function starStr(n) { return '★★★☆☆☆'.slice(3 - n, 6 - n); }
+
+  /* ============================================================
+     画面
+     ============================================================ */
+  var G = { stage: null, qi: 0, ok: 0, q: null, sub: null };
+
+  function renderList() {
+    var wrap = $('#gameBody');
+    wrap.innerHTML = '';
+    var total = STAGES.length, done = STAGES.filter(function (s) { return starsOf(s.id) > 0; }).length;
+    var bar = el('div', 'gprog');
+    bar.innerHTML = '<div class="gpbar"><i style="width:' + Math.round(done / total * 100) + '%"></i></div>'
+      + '<div class="gptext">クリアしたステージ <b>' + done + '</b> / ' + total + '</div>';
+    wrap.appendChild(bar);
+
+    CHAPTERS.forEach(function (c) {
+      wrap.appendChild(el('h3', '', c.name));
+      wrap.appendChild(el('div', 'chdesc', c.desc));
+      var list = el('div', 'stagelist');
+      STAGES.forEach(function (s, i) {
+        if (s.ch !== c.n) return;
+        var open = unlocked(i), st = starsOf(s.id);
+        var b = el('button', 'stagecard' + (open ? '' : ' locked') + (st ? ' cleared' : ''),
+          '<span class="sid">' + s.id + '</span>'
+          + '<span class="sname">' + s.name + '</span>'
+          + '<span class="shint">' + (open ? s.hint : '前のステージをクリアすると開きます') + '</span>'
+          + '<span class="sstar">' + (open ? starStr(st) : '🔒') + '</span>');
+        if (open) b.onclick = function () { start(i); };
+        list.appendChild(b);
+      });
+      wrap.appendChild(list);
+    });
+    wrap.appendChild(el('div', 'note',
+      '<b>分からない言葉が出たら、上の「はじめに」に全部そろえてあります。</b>'
+      + 'まちがえても減るものはありません。何度でもやり直せます。'));
+  }
+
+  function start(i) {
+    G.stage = i; G.qi = 0; G.ok = 0;
+    nextQ();
+  }
+
+  function nextQ() {
+    var s = STAGES[G.stage];
+    if (G.qi >= s.n) return finish();
+    G.q = s.gen();
+    G.sub = null;
+    paintQ();
+  }
+
+  function head() {
+    var s = STAGES[G.stage];
+    var h = el('div', 'ghead');
+    var back = el('button', 'gback', '← ステージ一覧');
+    back.onclick = function () { renderList(); window.scrollTo(0, 0); };
+    h.appendChild(back);
+    h.appendChild(el('div', 'gtitle', s.id + '　' + s.name));
+    var dots = el('div', 'gdots');
+    for (var i = 0; i < s.n; i++) {
+      dots.appendChild(el('span', 'gdot' + (i < G.qi ? ' done' : '') + (i === G.qi ? ' now' : ''), ''));
+    }
+    h.appendChild(dots);
+    return h;
+  }
+
+  function paintQ() {
+    var wrap = $('#gameBody');
+    wrap.innerHTML = '';
+    wrap.appendChild(head());
+    var q = G.q;
+    if (q.type === 'choice') paintChoice(wrap, q);
+    else if (q.type === 'tap') paintTap(wrap, q);
+    else paintBuild(wrap, q);
+  }
+
+  /* --- 4択 --- */
+  function paintChoice(wrap, q) {
+    var box = el('div', 'qbox');
+    box.appendChild(el('div', 'qtitle', q.prompt));
+    if (q.view) box.appendChild(q.view);
+    var g = el('div', 'opts' + (q.options.length <= 2 || String(q.options[0]).length > 6 ? ' wide' : ''));
+    q.options.forEach(function (o) {
+      var b = el('button', 'opt', o);
+      b.onclick = function () { judge(b, o === q.correct, q.correct, q.explain); };
+      g.appendChild(b);
+    });
+    box.appendChild(g);
+    wrap.appendChild(box);
+  }
+
+  /* --- タップして選ぶ --- */
+  function paintTap(wrap, q) {
+    var box = el('div', 'qbox');
+    box.appendChild(el('div', 'qtitle', q.prompt));
+    var got = [];
+    var row = groupBoxes(q.groups, function (i, node) {
+      if (node.classList.contains('picked') || node.classList.contains('nope')) return;
+      if (q.answer.indexOf(i) >= 0) {
+        node.classList.add('picked');
+        got.push(i);
+        if (got.length === q.answer.length) done(true);
+      } else {
+        node.classList.add('nope');
+        done(false);
+      }
+    });
+    box.appendChild(row);
+    if (q.none) {
+      var nb = el('button', 'big', q.noneLabel);
+      nb.onclick = function () { done(true); };
+      box.appendChild(nb);
+    }
+    wrap.appendChild(box);
+
+    function done(ok) {
+      $$('#gameBody .gbox').forEach(function (b, i) {
+        b.onclick = null; b.classList.remove('tappable');
+        if (q.answer.indexOf(i) >= 0) b.classList.add('picked');
+      });
+      judge(null, ok, null, q.explain);
+    }
+  }
+
+  /* --- 符を積み上げる --- */
+  function paintBuild(wrap, q) {
+    if (!G.sub) G.sub = { step: 0, fu: 20, lines: [{ label: '副底（どの手にもつく土台）', fu: 20 }], got: [], picked: [], miss: false };
+    var st = G.sub;
+    var box = el('div', 'qbox');
+
+    // 符メーター
+    var meter = el('div', 'fumeter');
+    meter.innerHTML = '<span class="fmlabel">いまの符</span><span class="fmval">' + st.fu + '</span><span class="fmunit">符</span>';
+    box.appendChild(meter);
+    var lines = el('div', 'fulines');
+    st.lines.forEach(function (l) {
+      lines.appendChild(el('div', 'fuline', '<span>' + l.label + '</span><b>+' + l.fu + '</b>'));
+    });
+    box.appendChild(lines);
+
+    if (st.step >= q.steps.length) {
+      // 切り上げ
+      var row3 = groupBoxes(q.groups, null);
+      markPicked(row3, st.picked);
+      box.appendChild(row3);
+      box.appendChild(el('div', 'qtitle', '合計 <b>' + st.fu + '符</b>。10符単位に切り上げると何符ですか'));
+      var opts = [q.total];
+      [st.fu, q.total + 10, Math.max(20, q.total - 10)].forEach(function (x) { if (opts.indexOf(x) < 0 && opts.length < 4) opts.push(x); });
+      var g2 = el('div', 'opts');
+      shuf(opts).forEach(function (o) {
+        var b = el('button', 'opt', o + '符');
+        b.onclick = function () {
+          judge(b, o === q.total, q.total + '符',
+            '<b>' + st.fu + '符 → ' + q.total + '符</b>　半端な数は、上の10まで上げます');
+        };
+        g2.appendChild(b);
+      });
+      box.appendChild(g2);
+      wrap.appendChild(box);
+      return;
+    }
+
+    var step = q.steps[st.step];
+    box.appendChild(el('div', 'qtitle', step.ask));
+
+    if (step.kind === 'tap') {
+      var row = groupBoxes(q.groups, function (i, node) {
+        if (st.picked.indexOf(i) >= 0) return;          // もう数えた面子は二度数えない
+        if (step.targets.indexOf(i) >= 0) {
+          st.picked.push(i);
+          st.got.push(i);
+          st.fu += step.fuOf(i);
+          st.lines.push({ label: step.labelOf(i), fu: step.fuOf(i) });
+          if (st.got.length === step.targets.length) { st.step++; st.got = []; }
+          paintQ();   // 画面を作り直す（追記すると二重に出る）
+        } else {
+          node.classList.add('nope');
+          st.miss = true;
+          setTimeout(function () { node.classList.remove('nope'); }, 600);
+        }
+      });
+      markPicked(row, st.picked);
+      box.appendChild(row);
+    } else {
+      var row2 = groupBoxes(q.groups, null);
+      markPicked(row2, st.picked);
+      box.appendChild(row2);
+      var g3 = el('div', 'opts wide');
+      step.options.forEach(function (o) {
+        var b = el('button', 'opt', o);
+        b.onclick = function () {
+          if (o === step.correct) {
+            if (step.fu) { st.fu += step.fu; st.lines.push({ label: step.label, fu: step.fu }); }
+            else st.lines.push({ label: step.label + '（符は付かない）', fu: 0 });
+            st.step++;
+            paintQ();
+          } else {
+            b.classList.add('wrong'); st.miss = true;
+          }
+        };
+        g3.appendChild(b);
+      });
+      box.appendChild(g3);
+    }
+    wrap.appendChild(box);
+  }
+
+  /* --- 正誤 --- */
+  function judge(btn, ok, correct, explain) {
+    $$('#gameBody .opt').forEach(function (b) {
+      b.disabled = true;
+      if (correct && b.textContent === correct) b.classList.add('right');
+    });
+    if (btn && !ok) btn.classList.add('wrong');
+    if (ok) G.ok++;
+    var box = el('div', 'result ' + (ok ? 'good' : 'bad'));
+    box.appendChild(el('div', 'rtitle', ok ? '正解' : 'ちがいます'));
+    if (explain) box.appendChild(el('div', 'rr', explain));
+    var b2 = el('button', 'big', G.qi + 1 >= STAGES[G.stage].n ? 'ステージの結果へ' : '次の問題へ');
+    b2.onclick = function () { G.qi++; nextQ(); window.scrollTo(0, 0); };
+    box.appendChild(b2);
+    $('#gameBody').appendChild(box);
+    b2.scrollIntoView({ block: 'nearest' });
+  }
+
+  /* --- ステージ結果 --- */
+  function finish() {
+    var s = STAGES[G.stage];
+    var st = G.ok === s.n ? 3 : (G.ok >= Math.ceil(s.n * 0.8) ? 2 : (G.ok >= Math.ceil(s.n * 0.6) ? 1 : 0));
+    var p = prog();
+    if (st > (p[s.id] || 0)) { p[s.id] = st; ST.set('prog', p); }
+
+    var wrap = $('#gameBody');
+    wrap.innerHTML = '';
+    var box = el('div', 'clearbox' + (st ? ' ok' : ''));
+    box.appendChild(el('div', 'ctitle', st ? 'ステージクリア' : 'もう一度'));
+    box.appendChild(el('div', 'cstars', starStr(st)));
+    box.appendChild(el('div', 'cscore', s.n + '問中 <b>' + G.ok + '問</b>正解'));
+    if (!st) box.appendChild(el('div', 'rr', s.n + '問中' + Math.ceil(s.n * 0.6) + '問できたらクリアです。もう一度やってみてください'));
+    var again = el('button', 'big2', 'もう一度');
+    again.onclick = function () { start(G.stage); window.scrollTo(0, 0); };
+    box.appendChild(again);
+    if (st && G.stage + 1 < STAGES.length) {
+      var nx = el('button', 'big', '次のステージ　' + STAGES[G.stage + 1].name + ' へ');
+      nx.onclick = function () { start(G.stage + 1); window.scrollTo(0, 0); };
+      box.appendChild(nx);
+    }
+    var back = el('button', 'big2', 'ステージ一覧へ');
+    back.onclick = function () { renderList(); window.scrollTo(0, 0); };
+    box.appendChild(back);
+    wrap.appendChild(box);
+  }
+
+  window.MJGame = { render: renderList, reset: function () { ST.set('prog', {}); } };
 })();
 
 </script>
